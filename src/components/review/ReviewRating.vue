@@ -7,8 +7,8 @@
         <div class="rating d-flex flex-row-reverse justify-content-center">
             <!-- Loop through the number of stars and create radio inputs -->
             <template v-for="n in numberOfStars" :key="`${name}-${n}`">
-                <input type="radio" :name="`${name}Rating`" :value="`${numberOfStars - n + 1}`" :id="`${name}Rating-${n}`">
-                <label :for="`${name}Rating-${n}`">☆</label>
+                <input type="radio" :name="`${name}`" :value="`${numberOfStars - n + 1}`" :id="`${name}-${n}`">
+                <label :for="`${name}-${n}`">☆</label>
             </template>
         </div>
     </div>

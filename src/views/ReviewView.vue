@@ -1,7 +1,8 @@
 <template>
-    <reviewForm />
+    <ReviewForm />
 </template>
 
 <script setup lang="ts">
-import reviewForm from "../components/review/review-form.vue"
+import ReviewForm from "@/components/review/ReviewForm.vue"
+
 </script>
