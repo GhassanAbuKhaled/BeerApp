@@ -1,13 +1,14 @@
 <template>
     <!-- Rating component -->
-    <div class="rate d-block d-sm-flex align-items-center justify-content-between">
+    <div class="d-block d-sm-flex align-items-center justify-content-between">
         <!-- Displaying the name of the item being rated -->
-        <h6 class="">{{ name }}:</h6>
+        <h6 class="form-label">{{ name }} <span class="text-danger">*</span></h6>
+        
         <!-- Star rating control -->
         <div class="rating d-flex flex-row-reverse justify-content-center">
             <!-- Loop through the number of stars and create radio inputs -->
             <template v-for="n in numberOfStars" :key="`${name}-${n}`">
-                <input type="radio" :name="`${name}`" :value="`${numberOfStars - n + 1}`" :id="`${name}-${n}`">
+                <input type="radio" :name="`${name}`" :value="`${numberOfStars - n + 1}`" :id="`${name}-${n}`" required>
                 <label :for="`${name}-${n}`">☆</label>
             </template>
         </div>

@@ -1,8 +1,8 @@
 <template>
-  <main class="container mt-1 p-3">
+  <main class="container mt-1 p-3 mb-5">
     <h4 class="text-start">Beer Review</h4>
     <!-- Form container -->
-    <form class="row g-3 needs-validation" novalidate @submit.prevent="handleSubmit">
+    <form class="row g-3 needs-validation" id="reviewBeerForm" novalidate @submit.prevent="handleSubmit">
       <!-- Type of Beer -->
       <BeerType />
       <!-- Location and Weather Inputs -->
@@ -26,15 +26,24 @@ import Rating from "./ReviewRating.vue";
 import BeerType from "./ReviewBeerType.vue";
 import WeatherAndLocation from "./ReviewLocationAndWeather.vue";
 import TermsAndConditions from "./ReviewTermsAndConditions.vue";
+import sanitizeInputs from "@/utils/sanitizedInput";
 
 const handleSubmit = (event: Event) => {
+  event.preventDefault();
   const form = event.target as HTMLFormElement;
+  const formData: any = new FormData(form);
+  const reviewData = Object.fromEntries(formData.entries()) as ReviewData;
+  console.log('Form Data:', reviewData);
+  console.log(sanitizeInputs(reviewData));
   if (!form.checkValidity()) {
-    event.preventDefault();
     event.stopPropagation();
+    form.classList.add('was-validated');
+
+    return;
   }
-  form.classList.add('was-validated');
 };
+
+
 </script>
 
 <style scoped>

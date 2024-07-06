@@ -9,17 +9,35 @@ interface BeersResponse {
 
 // Country interface with flag emoji
 interface Country {
-  id: string;
   name: string;
   flag: string;
 }
 interface countriesResponse {
-  countries: Country[];
+  countries: {
+    [key: string]: Country
+  };
 }
+
 
 // Interface for the location details
 interface WeatherAndLocationData {
   country: string;
   city: string;
   temperature: number;
+}
+
+interface InputRecord {
+  [key: string]: any;
+}
+
+interface ReviewData {
+  Hoppiness: number;
+  Maltiness: number;
+  Overall: number;
+  beerType: string;
+  city: string;
+  country: string;
+  temperature: number;
+  temperatureUnit: string;
+  termsCheckbox: string;
 }

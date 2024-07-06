@@ -15,7 +15,7 @@ const getLocation = async (): Promise<WeatherAndLocationData | null> => {
       const response = await locationApi.get(
         LOCATIONS_ENDPOINTS.GET_LOCATION_AND_WEATHER(latitude, longitude)
       );
-
+      
       const data: WeatherAndLocationData = {
         country: response.data.sys.country,
         city: response.data.name,
@@ -33,20 +33,25 @@ const getLocation = async (): Promise<WeatherAndLocationData | null> => {
 };
 
 // Retrieves the current latitude and longitude using the Geolocation API.
-const getLatitudeAndLongitude = (): Promise<void> =>
-  new Promise((resolve, reject) => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        ({ coords: { latitude: lat, longitude: lon } }) => {
-          latitude = lat;
-          longitude = lon;
-          resolve();
-        },
-        (err) => reject(new Error(err.message || "An unknown error occurred."))
-      );
-    } else {
-      reject(new Error("Geolocation is not supported by this browser."));
+const getLatitudeAndLongitude = (): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    try {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          ({ coords: { latitude: lat, longitude: lon } }) => {
+            latitude = lat;
+            longitude = lon;
+            resolve();
+          },
+          (err) => reject(new Error(err.message || "An unknown error occurred."))
+        );
+      } else {
+        reject(new Error("Geolocation is not supported by this browser."));
+      }
+    } catch (error) {
+      reject(new Error("An error occurred while trying to get the location."));
     }
   });
+};
 
 export default getLocation;

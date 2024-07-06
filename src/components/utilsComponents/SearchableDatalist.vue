@@ -1,18 +1,17 @@
 <template>
     <div class="form-group position-relative">
         <!-- Label for the input -->
-        <label class="form-label" :for="name">{{ label }}</label>
+        <label class="form-label " :for="name">{{ label }} <span class="text-danger">*</span></label>
 
         <!-- Input field -->
-        <input autocomplete="nope" role="combobox" :id="`${id}Input`" :name="name" :value="value" class="form-control"
-            :pattern="pattern" placeholder="Type to search..." @focus="showDatalist" @input="filterOptions" required>
+        <input type="text" class="form-control" autocomplete="off" role="combobox" :id="`${id}Input`" :name="name"
+            :value="value" placeholder="Type to search..." @focus="showDatalist" @input="filterOptions" required>
 
         <!-- Datalist for options -->
         <datalist :id="`${id}List`" role="listbox" :class="zIndex">
             <!-- Options in datalist -->
 
-            <option v-for="(opt, index) in optionsList" :key="index" :value="opt" @click="selectOption(opt)"
-                class="emojiText">
+            <option v-for="(opt, index) in optionsList" :key="index" :value="opt" @click="selectOption(opt)">
                 {{ opt }}
             </option>
         </datalist>
@@ -23,7 +22,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount, defineProps } from 'vue';
+import validate from '@/utils/validateInput';
+import { ref, onMounted, onBeforeUnmount } from 'vue';
 
 // Define props for the component
 const props = defineProps({
@@ -31,10 +31,11 @@ const props = defineProps({
     name: { type: String, required: true },
     label: { type: String, required: true },
     optionsList: { type: Array as () => string[], required: true },
-    pattern: { type: String, default: "[A-Za-z]{2,}" },
     value: { type: String },
     zIndex: { type: String, required: true }
 });
+
+const valedator = (props.label === 'Beer') ? validate.beerName : validate.countryName;
 
 // Reactive references
 const optionsList = ref(props.optionsList);
@@ -50,20 +51,21 @@ const showDatalist = () => {
     }
 };
 
-// Filter options based on input value
 const filterOptions = () => {
-    currentFocus.value = -1;  // Reset current focus
-    const text = input.value?.value.toUpperCase() || '';  // Get input value
-    if (options.value) {
-        Array.from(options.value.options).forEach(option => {
-            option.style.display = option.value.toUpperCase().includes(text) ? "block" : "none";  // Filter options visibility
-        });
-    }
+    currentFocus.value = -1;
+    const text = (input.value?.value || '').trim().toUpperCase();
+    // console.log((validate(input.value?.value || '', props.label)));
+    checkValidation();
+    Array.from(options.value?.options || []).forEach(option => {
+        option.style.display = text.length > 0 && !option.value.toUpperCase().includes(text) ? "none" : "block";
+    });
 };
 
 // Handle selection of an option
 const selectOption = (option: string) => {
     if (input.value && options.value) {
+        input.value?.classList.add('is-valid');
+        input.value?.classList.remove('is-invalid');
         input.value.value = option;  // Set input value to selected option
         options.value.style.display = 'none';  // Hide datalist
         input.value.style.borderRadius = "5px";  // Reset input border radius
@@ -83,11 +85,23 @@ const hideDatalist = (event: MouseEvent) => {
     }
 };
 
+const checkValidation = () => {
+    if (!(valedator(input.value?.value || ''))) {
+        input.value?.classList.remove('is-valid');
+        input.value?.classList.add('is-invalid');
+    } else {
+        input.value?.classList.remove('is-invalid');
+        input.value?.classList.add('is-valid');
+    }
+};
 // Initialize references and add event listener on component mount
 onMounted(() => {
     input.value = document.getElementById(`${props.id}Input`) as HTMLInputElement;  // Set input reference
     options.value = document.getElementById(`${props.id}List`) as HTMLDataListElement;  // Set datalist reference
     document.addEventListener('click', hideDatalist);  // Add click event listener
+
+    if (props.value) checkValidation();
+
 });
 
 // Remove event listener on component unmount
@@ -118,9 +132,5 @@ option:hover,
 .active {
     background-color: rgb(129, 235, 136);
     cursor: pointer;
-}
-
-.emojiText {
-    font-family: "Segoe MDL2 Assets", "Segoe UI Symbol";
 }
 </style>
