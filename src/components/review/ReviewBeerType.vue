@@ -1,6 +1,14 @@
 <template>
     <div class="col-sm-12">
-        <SearchableDatalist id="beer" name="beerType" label="Beer" zIndex="z-3" :optionsList="optionsList" :key="componentKey" />
+        <SearchableDatalist 
+          id="beer" 
+          name="beerType" 
+          label="Beer" 
+          zIndex="z-3" 
+          :optionsList="optionsList" 
+          :key="componentKey" 
+          :validator="validators.beerName"
+        />
     </div>
 </template>
 
@@ -8,6 +16,7 @@
 
 import SearchableDatalist from '@/components/utilsComponents/SearchableDatalist.vue';
 import getBeerTypes from '@/services/reviewServices';
+import { validators } from '@/utils/validateInput';
 import { onMounted, ref } from 'vue';
 
 // Initializing a reactive reference for optionsList

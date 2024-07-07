@@ -1,57 +1,63 @@
 <template>
-    <!-- Rating component -->
-    <div class="d-block d-sm-flex align-items-center justify-content-between">
-        <!-- Displaying the name of the item being rated -->
-        <h6 class="form-label">{{ name }} <span class="text-danger">*</span></h6>
-        
+    <div class="col-xs-12 col-sm-9 d-flex justify-content-between ">
+        <!-- Item name label -->
+        <h6 class="form-label">{{ itemName }} <span class="text-danger">*</span></h6>
         <!-- Star rating control -->
-        <div class="rating d-flex flex-row-reverse justify-content-center">
-            <!-- Loop through the number of stars and create radio inputs -->
-            <template v-for="n in numberOfStars" :key="`${name}-${n}`">
-                <input type="radio" :name="`${name}`" :value="`${numberOfStars - n + 1}`" :id="`${name}-${n}`" required>
-                <label :for="`${name}-${n}`">☆</label>
+        <div class="star-rating grid text-start" style="direction: rtl;">
+            <!-- Star rating inputs -->
+            <template v-for="i in starCount" :key="`${itemName}-${i}`">
+                <input 
+                type="radio" 
+                class="d-none"
+                :name="itemName" 
+                :value="`${starCount - i + 1}`" 
+                :id="`${itemName}-${i}`"
+                required>
+                <label :for="`${itemName}-${i}`" class="fs-4">☆</label>
             </template>
+            <div class="invalid-feedback text-start">Please select a rating</div>
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
 defineProps({
-    name: { type: String, required: true },
-    numberOfStars: { type: Number, default: 9 },
+    itemName: { type: String, required: true },
+    starCount: { type: Number, default: 9 },
 });
 </script>
 
 <style scoped>
-.rating>input {
-    display: none
-}
-
-.rating>label {
+.star-rating>label {
     position: relative;
     width: 1em;
-    font-size: 23px;
-    font-weight: 300;
-    color: #57e32c;
-    cursor: pointer
+    color: #FFC107;
+    cursor: pointer;
+    line-height: 0;
 }
 
-.rating>label::before {
+.star-rating>label::before {
     content: "\2605";
     position: absolute;
-    opacity: 0
+    opacity: 0;
+    transition: transform 0.2s, opacity 0.2s;
 }
 
-.rating>label:hover:before,
-.rating>label:hover~label:before {
-    opacity: 1 !important
+.star-rating>label:hover:before {
+    opacity: 1 !important;
+    transform: scale(1.4) !important;
 }
 
-.rating>input[type="radio"]:checked~label:before {
+.star-rating>label:hover~label:before {
+    opacity: 1 !important;
+    transform: scale(1) !important; /* Ensures other stars stay the same size */
+}
+
+.star-rating>input[type="radio"]:checked~label:before {
     opacity: 1;
 }
 
-.rating:hover>input:checked~label:before {
-    opacity: 0.4
+.star-rating:hover>input:checked~label:before {
+    opacity: 0;
 }
 </style>

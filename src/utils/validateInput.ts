@@ -47,10 +47,18 @@ const validateInput = (input: string, rule: ValidationRule): boolean => {
 };
 
 // Validation object with specific methods
-const validate = {
+const validators = {
     cityName: (input: string): boolean => validateInput(input, validationConfig.city),
     countryName: (input: string): boolean => validateInput(input, validationConfig.country),
     beerName: (input: string): boolean => validateInput(input, validationConfig.beer),
 };
 
-export default validate;
+const classValidToggle = (isValid: boolean, element: HTMLElement, className = '') => {
+    element.classList.toggle('is-invalid', !isValid);
+    element.classList.toggle('is-valid', isValid);
+    if (className) {
+        element.classList.toggle(className, !isValid);
+    }
+};
+
+export { validators, classValidToggle };

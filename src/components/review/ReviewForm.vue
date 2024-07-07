@@ -1,16 +1,16 @@
 <template>
-  <main class="container mt-1 p-3 mb-5">
+  <main class="container border mt-1 p-4 mb-5 user-select-none">
     <h4 class="text-start">Beer Review</h4>
     <!-- Form container -->
-    <form class="row g-3 needs-validation" id="reviewBeerForm" novalidate @submit.prevent="handleSubmit">
+    <form class="row g-4 needs-validation" id="reviewBeerForm" novalidate @submit.prevent="handleSubmit">
       <!-- Type of Beer -->
       <BeerType />
       <!-- Location and Weather Inputs -->
       <WeatherAndLocation />
       <!-- Ratings -->
-      <Rating name="Hoppiness" />
-      <Rating name="Maltiness" />
-      <Rating name="Overall" />
+      <Rating itemName="Hoppiness" />
+      <Rating itemName="Maltiness" />
+      <Rating itemName="Overall" />
       <!-- Terms and Conditions Checkbox -->
       <TermsAndConditions />
       <!-- Submit Button -->
@@ -33,14 +33,14 @@ const handleSubmit = (event: Event) => {
   const form = event.target as HTMLFormElement;
   const formData: any = new FormData(form);
   const reviewData = Object.fromEntries(formData.entries()) as ReviewData;
-  console.log('Form Data:', reviewData);
-  console.log(sanitizeInputs(reviewData));
   if (!form.checkValidity()) {
     event.stopPropagation();
     form.classList.add('was-validated');
-
+    
     return;
   }
+  console.log('Form Data:', reviewData);
+  console.log(sanitizeInputs(reviewData));
 };
 
 
