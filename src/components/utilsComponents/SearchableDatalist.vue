@@ -16,19 +16,19 @@
            required 
     >
     <!-- Datalist for options -->
-    <datalist :id="`${id}-dataList`"
-              role="listbox"
-              :class="zIndex"
-               ref="dataListElement">
+    <div :id="`${id}-dataList`" :class="[zIndex, 'datalist']" ref="dataListElement">
       <!-- Options in datalist -->
-      <option v-for="(opt, index) in optionsList"
+      
+      <div v-for="(opt, index) in optionsList"
               :key="index"
               :value="opt"
+              class="option"
               @click="selectOption(opt)"
               v-show="opt.toUpperCase().includes(filteredText)">
-        {{ opt }}
-      </option>
-    </datalist>
+              {{ opt  }} 
+      </div>
+     
+    </div>
     <!-- Validation feedback -->
     <div class="invalid-feedback">
       Please select a valid {{ props.label.toLowerCase() }}.
@@ -129,7 +129,7 @@ onBeforeUnmount(() => {
   
 <style scoped>
 /* Scoped styles for datalist */
-datalist {
+.datalist {
   position: absolute;
   background-color: #f0f0f0;
   border: 1px solid rgb(139, 139, 139);
@@ -142,10 +142,11 @@ datalist {
   max-height: 10rem;
   overflow-y: auto;
   width: 100%;
+  display: none;
 }
 
 /* Hover effect for options */
-option:hover,
+.option:hover,
 .active {
   background-color: rgb(129, 235, 136);
   cursor: pointer;
