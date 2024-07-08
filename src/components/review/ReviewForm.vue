@@ -8,9 +8,9 @@
       <!-- Location and Weather Inputs -->
       <WeatherAndLocation />
       <!-- Ratings -->
-      <Rating itemName="Hoppiness" />
-      <Rating itemName="Maltiness" />
-      <Rating itemName="Overall" />
+      <Rating itemName="Hoppiness" id="hoppinessRating" />
+      <Rating itemName="Maltiness"  id="maltinessRating"/>
+      <Rating itemName="Overall" id="overallRating"/>
       <!-- Terms and Conditions Checkbox -->
       <TermsAndConditions />
       <!-- Submit Button -->
@@ -26,21 +26,19 @@ import Rating from "./ReviewRating.vue";
 import BeerType from "./ReviewBeerType.vue";
 import WeatherAndLocation from "./ReviewLocationAndWeather.vue";
 import TermsAndConditions from "./ReviewTermsAndConditions.vue";
-import sanitizeInputs from "@/utils/sanitizedInput";
+import { classValidToggle, formValidator, validators } from "@/utils/validateInput";
 
 const handleSubmit = (event: Event) => {
   event.preventDefault();
   const form = event.target as HTMLFormElement;
   const formData: any = new FormData(form);
   const reviewData = Object.fromEntries(formData.entries()) as ReviewData;
-  if (!form.checkValidity()) {
-    event.stopPropagation();
-    form.classList.add('was-validated');
-    
-    return;
-  }
-  console.log('Form Data:', reviewData);
-  console.log(sanitizeInputs(reviewData));
+
+  if(!formValidator(form)) return;
+
+  console.log(reviewData);
+
+
 };
 
 

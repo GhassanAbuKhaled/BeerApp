@@ -18,12 +18,11 @@ interface countriesResponse {
   };
 }
 
-
 // Interface for the location details
 interface WeatherAndLocationData {
   country: string;
   city: string;
-  temperature: number;
+  temperature: number | null;
 }
 
 interface InputRecord {

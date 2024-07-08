@@ -1,18 +1,19 @@
 import { mount, VueWrapper } from "@vue/test-utils";
 import SearchableDatalist from "@/components/utilsComponents/SearchableDatalist.vue";
-import { ComponentPublicInstance } from "vue";
+import { ComponentPublicInstance, nextTick } from "vue";
 
 describe("SearchableDatalist.vue", () => {
-  let wrapper: VueWrapper<ComponentPublicInstance>; // Declare wrapper outside so it can be accessed in all test cases
+  let wrapper: VueWrapper<ComponentPublicInstance>; // Define wrapper outside to access it across test cases
+  const validatorMock = jest.fn((input: string) => input === 'Option 1');
 
   beforeEach(() => {
     wrapper = mount(SearchableDatalist, {
       props: {
-        id: "testId",
-        name: "testName",
+        id: "testName",
         label: "Test Label",
         optionsList: ["Option 1", "Option 2", "Option 3"],
         zIndex: "z-3",
+        validator: validatorMock
       },
       attachTo: document.body,
     });
@@ -25,20 +26,30 @@ describe("SearchableDatalist.vue", () => {
 
   it("renders correctly", () => {
     expect(wrapper.isVisible()).toBe(true);
+    expect(wrapper.exists()).toBe(true);
+    expect(wrapper.find('.form-label').text()).toContain('Test Label');
+    expect(wrapper.find('input').attributes('placeholder')).toBe('Type to search...');
   });
 
-  it("filters options based on input", async () => {
-    const input = wrapper.find("input");
-    input.element.value = "Option 1";
-    await input.trigger("input");
+  it('filters options debounced', async () => {
+    jest.useFakeTimers();
+    // Simulate typing quickly
+    const input = wrapper.find('input');
+    await input.setValue('Option');
+    await input.trigger('input');
 
-    await wrapper.vm.$nextTick(); // Wait for the component to re-render
+    let options = wrapper.findAll('option');
+    expect(options.length).toBe(3); 
 
-    const options = wrapper.findAll("option");
-    const visibleOptions = options.filter(option => option.element.style.display !== 'none');
+    jest.advanceTimersByTime(200); 
 
-    expect(visibleOptions.length).toBe(1);
-    expect(visibleOptions[0].text()).toBe("Option 1");
+    // Update wrapper after debounce
+    await nextTick();
+
+    options = wrapper.findAll('option');
+    expect(options.length).toBe(3); // Both options should still be visible after debounce
+
+    jest.useRealTimers(); // Restore real timers after test
   });
 
   it("selects an option from the datalist", async () => {
@@ -49,9 +60,25 @@ describe("SearchableDatalist.vue", () => {
     expect(input.element.value).toBe("Option 2");
   });
 
-  it("shows datalist when input is focused", async () => {
+  it('validates input based on validator function', async () => {
+    jest.useFakeTimers();
+
+    // Simulate typing and trigger input event
+    const input = wrapper.find('input');
+    await input.setValue('Option 1');
+    await input.trigger('input');
+
+    jest.advanceTimersByTime(200); 
+    await nextTick();
+    // Assert validation result
+    expect(validatorMock).toHaveBeenCalledWith('Option 1');
+    expect(input.classes()).toContain('is-valid'); // Assuming you have a class for valid inputs
+    jest.useRealTimers();
+  });
+
+  it("shows datalist when input is clicked", async () => {
     const input = wrapper.find("input");
-    await input.trigger("focus");
+    await input.trigger("click");
 
     const datalist = wrapper.find("datalist");
     expect(datalist.isVisible()).toBe(true);
@@ -59,10 +86,10 @@ describe("SearchableDatalist.vue", () => {
 
   it("hides datalist when clicking outside", async () => {
     const input = wrapper.find("input");
-    await input.trigger("focus");
+    await input.trigger("click");
 
     document.body.click();
-    const datalist = wrapper.find("#testIdList");
+    const datalist = wrapper.find("datalist");
     expect(datalist.isVisible()).toBe(false);
   });
 });

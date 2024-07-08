@@ -3,7 +3,6 @@
   <div class="col-sm-7">
     <SearchableDatalist
       id="country"
-      name="country"
       label="Country"
       zIndex="z-2"
       :value="locationDetails.country"
@@ -38,7 +37,7 @@
         name="temperatureUnit"
         class="form-check-input"
         value="F"
-        @change="temperatureUnit = 'F'"
+        @click="temperatureUnit = 'F'"
       />
       <label class="form-check-label" for="fahrenheitRadio">Fahrenheit</label>
     </div>
@@ -49,7 +48,7 @@
         name="temperatureUnit"
         class="form-check-input"
         value="C"
-        @change="temperatureUnit = 'C'"
+        @click="temperatureUnit = 'C'"
         checked
       />
       <label class="form-check-label" for="celsiusRadio">Celsius</label>
@@ -64,8 +63,6 @@
       id="temperature"
       name="temperature"
       ref="temperatureInputField"
-      :min="temperatureRange.min"
-      :max="temperatureRange.max"
       v-model="locationDetails.temperature"
       @input="validateTemperature"
       step="0.5"
@@ -76,31 +73,24 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed, watch } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import SearchableDatalist from '@/components/utilsComponents/SearchableDatalist.vue';
 import getLocation from '@/services/locationServices';
 import getCountriesList from '@/services/countriesServices';
 import {validators, classValidToggle } from '@/utils/validateInput';
 
+let optionsList : string[] = [];
 // Reactive references for location details, options list, and component key
-const locationDetails = ref({ country: '', city: '', temperature: 0 });
-const optionsList = ref<string[]>([]);
+const locationDetails = ref<WeatherAndLocationData>({ country: '', city: '', temperature: null });
 const componentKey = ref(0);
-const temperatureUnit = ref('C');
-
-// Refs for city and temperature input fields
-const cityInputField = ref<HTMLInputElement>();
+const temperatureUnit = ref<'C' | 'F'>('C');
 const temperatureInputField = ref<HTMLInputElement>();
 
 // Fetches initial location details from the server
 const fetchLocationDetails = async () => {
   try {
       const details = await getLocation();
-      if (details) {
-        locationDetails.value = details;
-        validateCity();
-        validateTemperature();
-    }
+      if (details) locationDetails.value = details;
   } catch (error) {
     console.error('Error fetching location details:', error);
   }
@@ -110,13 +100,23 @@ const fetchLocationDetails = async () => {
 const fetchCountries = async () => {
   try {
     const data = await getCountriesList();
-    if (data) {
-      optionsList.value = Object.values(data.countries).map(country => `${country.name} ${country.flag}`);
-      const currentCountry = data.countries[locationDetails.value.country];
-      if (currentCountry) locationDetails.value.country = `${currentCountry.name} ${currentCountry.flag}`;
-      componentKey.value += 1; // Force re-render of the datalist component
+
+    if (data && data.countries) {
+      const countries = data.countries;
+
+      // Update optionsList with country names and flags
+      optionsList = Object.values(countries).map(country => `${country.name} ${country.flag}`);
+      
+      // selecte cuurrent country in locationDetails.
+      const currentCountry = countries[locationDetails.value.country];
+      if (currentCountry) {
+        locationDetails.value.country = `${currentCountry.name} ${currentCountry.flag}`;
+      }
+      // Force re-render of the datalist component by incrementing componentKey
+      componentKey.value += 1;
     }
   } catch (error) {
+    // Log error if fetching countries fails
     console.error('Error fetching countries list:', error);
   }
 };
@@ -128,28 +128,23 @@ onMounted(async () => {
 });
 
 // Validates the city input field
-const validateCity = () => {
-  if (cityInputField.value) {
-    const isValid = validators.cityName(cityInputField.value.value);
-    classValidToggle(isValid, cityInputField.value);
+const validateCity = (event: Event) =>{
+  if(event){
+    const input = event.target as HTMLInputElement;
+    classValidToggle(validators.cityName(input.value), input);
   }
 };
 
-// Computes the temperature range based on the selected unit
-const temperatureRange = computed(() => ({
-  min: temperatureUnit.value === 'C' ? -70 : -100,
-  max: temperatureUnit.value === 'C' ? 70 : 160,
-}));
-
 // Validates the temperature input field
 const validateTemperature = () => {
-  if (temperatureInputField.value) {
-    const temperatureValue = parseFloat(temperatureInputField.value.value);
-    const isValid = temperatureValue >= temperatureRange.value.min && temperatureValue <= temperatureRange.value.max;
-    classValidToggle(isValid, temperatureInputField.value);
+ const input =  temperatureInputField.value;
+  if (input) {
+   const isValid = validators.temperatue(temperatureUnit.value, parseFloat(input.value));
+   classValidToggle(isValid, input );
   }
 };
 
 // Watch for changes in temperature unit and revalidate temperature input
-watch(temperatureUnit, validateTemperature);
+watch(temperatureUnit, validateTemperature)
+
 </script>

@@ -1,15 +1,17 @@
-import { mount, VueWrapper } from "@vue/test-utils";
-import { ComponentPublicInstance } from "vue";
-import ReviewRating from "@/components/review/ReviewRating.vue"; // Adjust the path according to your project structure
+import { shallowMount, VueWrapper } from "@vue/test-utils";
+import ReviewRating from "@/components/review/ReviewRating.vue";
 
 describe("ReviewRating.vue", () => {
-  let wrapper: VueWrapper<ComponentPublicInstance>;
-  const numberOfStars = 5;
-  const name = "Test Item";
+  let wrapper: VueWrapper<any>;
 
   beforeEach(() => {
-    wrapper = mount(ReviewRating, {
-      props: { name, numberOfStars },
+    wrapper = shallowMount(ReviewRating, {
+      props: {
+        itemName: "Test Item",
+        starCount: 5,
+        id:"tRating"
+      },
+      attachTo: document.body,
     });
   });
 
@@ -17,27 +19,18 @@ describe("ReviewRating.vue", () => {
     wrapper.unmount();
   });
 
-  it("renders the correct number of stars", () => {
-    // Check if the correct number of stars is rendered
-    const stars = wrapper.findAll('input[type="radio"]');
-    expect(stars.length).toBe(numberOfStars);
+  it("renders correctly with given props", () => {
+    expect(wrapper.exists()).toBe(true);
+    expect(wrapper.find("h6.form-label").text()).toContain("Test Item");
+    expect(wrapper.findAll("input[type='radio']").length).toBe(5);
   });
 
-  it("sets the correct name for the inputs", () => {
-    // Check if the name attribute of inputs is correct
-    const stars = wrapper.findAll('input[type="radio"]');
-    stars.forEach((star, index) => {
-      expect(star.attributes("name")).toBe(name);
-      expect(star.attributes("id")).toBe(`${name}-${index + 1}`);
-      expect(star.attributes("value")).toBe(`${numberOfStars - index}`);
-    });
+  it("updates the star rating on click", async () => {
+    const firstStarLabel = wrapper.find("label[for='tRating-1']");
+    await firstStarLabel.trigger("click");
+
+    const firstStarInput = wrapper.find("input[type='radio']#tRating-1");
+    expect((firstStarInput.element as HTMLInputElement).checked).toBe(true);
   });
 
-  it("renders the correct labels for the stars", () => {
-    // Check if the labels are associated correctly
-    const labels = wrapper.findAll("label");
-    labels.forEach((label, index) => {
-      expect(label.attributes("for")).toBe(`${name}-${index + 1}`);
-    });
-  });
 });

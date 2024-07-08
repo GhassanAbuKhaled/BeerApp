@@ -1,19 +1,24 @@
 <template>
-    <div class="col-xs-12 col-sm-9 d-flex justify-content-between ">
+    <div class="col-xs-12 col-sm-9 d-flex justify-content-between">
         <!-- Item name label -->
-        <h6 class="form-label">{{ itemName }} <span class="text-danger">*</span></h6>
+        <h6 class="form-label">
+            {{ itemName }} <span class="text-danger">*</span>
+        </h6>
         <!-- Star rating control -->
         <div class="star-rating grid text-start" style="direction: rtl;">
             <!-- Star rating inputs -->
             <template v-for="i in starCount" :key="`${itemName}-${i}`">
                 <input 
-                type="radio" 
-                class="d-none"
-                :name="itemName" 
-                :value="`${starCount - i + 1}`" 
-                :id="`${itemName}-${i}`"
-                required>
-                <label :for="`${itemName}-${i}`" class="fs-4">☆</label>
+                    type="radio" 
+                    class="d-none"
+                    :name="id" 
+                    :value="starCount - i + 1"
+                    :id="`${id}-${starCount - i + 1}`"
+                    ref="ratingInputs"
+                    @click="handleClick(starCount - i + 1)"
+                    required
+                >
+                <label :for="`${id}-${starCount - i + 1}`" class="fs-4">☆</label>
             </template>
             <div class="invalid-feedback text-start">Please select a rating</div>
         </div>
@@ -21,11 +26,33 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue';
+import { classValidToggle, validators } from '@/utils/validateInput';
+
 defineProps({
-    itemName: { type: String, required: true },
+    itemName: { 
+        type: String, 
+        required: true, 
+    },
+    id:{
+        type: String, 
+        required: true, 
+        validator(value: string, prpos) {
+           return  validators.withSpacesRegex(value)
+        } 
+    },
     starCount: { type: Number, default: 9 },
 });
+
+const ratingInputs = ref<HTMLInputElement[]>([]);
+
+const handleClick = (value: number) => {
+    if (ratingInputs.value.length > 0) {
+        classValidToggle(value > 0, ratingInputs.value[0]);          
+    }
+};
 </script>
+
 
 <style scoped>
 .star-rating>label {
