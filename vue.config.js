@@ -10,6 +10,12 @@ module.exports = defineConfig({
       })
     ],
   },
+  pwa: {
+    workboxPluginMode: 'InjectManifest', // InjectManifest to inject custom service worker
+    workboxOptions: {
+      swSrc: '@/service-worker', // Specify the source of custom service worker file
+    },
+  },
   devServer: {
     proxy: "https://api.openweathermap.org/",
     historyApiFallback: true,
