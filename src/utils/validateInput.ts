@@ -1,14 +1,16 @@
+// Type definition for validation rules
 type ValidationRule = {
-    regex: RegExp;
-    minLength: number;
+    regex: RegExp; 
+    minLength: number; 
     maxLength: number;
 };
 
+// Type definition for the validation configuration, mapping field names to their corresponding validation rules
 type ValidationConfig = {
     [key: string]: ValidationRule;
 };
 
-// Validation configuration object
+// Validation configuration object specifying rules for various input fields
 const validationConfig: ValidationConfig = {
     country: {
         regex: /^(?!.*\s{3})(?!.*\b\w{25,}\b)[\p{L}\p{M}\s\-'éèêëàáâäãåçìíîïòóôöùúûüÿýæœ.,&\u{1F1E6}-\u{1F1FF}]+$/u,
@@ -28,62 +30,75 @@ const validationConfig: ValidationConfig = {
 };
 
 
-// Helper function to validate input length
+// Validates the length of the input string.
 const validateLength = (input: string, minLength: number, maxLength: number): boolean => {
-    const trimmedInput = input.trim();
-    return trimmedInput.length >= minLength && trimmedInput.length <= maxLength;
+    const trimmedInput = input.trim(); // Remove leading and trailing whitespace
+    return trimmedInput.length >= minLength && trimmedInput.length <= maxLength; // Check if length is within the allowed range
 };
 
-// Generic validation function
+
+// Validates an input string against a given validation rule.
 const validateInput = (input: string, rule: ValidationRule): boolean => {
-
-    if(rule) return rule.regex.test(input) && validateLength(input, rule.minLength, rule.maxLength);
-    return false;
+    if (rule) {
+        // Validate the input using the regex and length constraints
+        return rule.regex.test(input) && validateLength(input, rule.minLength, rule.maxLength);
+    }
+    return false; // Return false if no rule is provided
 };
 
 
-const validateTemperature = (unit: string, value: number) => {
-    if(!value) return false;    
-    const min = (unit === 'C') ? -70 : -100
-    const max = (unit === 'C') ? 70 : 160;
-    return value >= min && value <= max;
-}
+// Validates the temperature based on the unit (Celsius or Fahrenheit) and the value.
+const validateTemperature = (unit: string, value: number): boolean => {
+    if (Number.isNaN(value)) return false; // Check if the value is a valid number
 
-// Validation object with specific methods
+    // Define min and max temperature limits based on the unit
+    const min = unit === 'C' ? -70 : -100;
+    const max = unit === 'C' ? 70 : 160;
+
+    return value >= min && value <= max; 
+};
+
+// Object containing specific validation methods for different fields
 const validators = {
     cityName: (name: string): boolean => validateInput(name, validationConfig.city),
     countryName: (name: string): boolean => validateInput(name, validationConfig.country),
     beerName: (name: string): boolean => validateInput(name, validationConfig.beer),
-    temperatue: (unit: 'C' | 'F', value: number): boolean => validateTemperature(unit, value),
-    withSpacesRegex: (value: string) => {
-        // Validate: Ensure the value contains only word characters and hyphens
+    temperature: (unit: 'C' | 'F', value: number): boolean => validateTemperature(unit, value),
+    withSpacesRegex: (value: string): boolean => {
         const isValidProp = /^[\w-]+$/.test(value);
         if (!isValidProp) {
-        throw new Error('Invalid itemName prop: should only contain alphanumeric characters and hyphens.');
+            throw new Error('Invalid itemName prop: should only contain alphanumeric characters and hyphens.');
         }
-        return isValidProp;                         
-    } 
-      
+        return isValidProp; // Return the validation result
+    }
 };
 
-const classValidToggle = (isValid: boolean, element: HTMLElement): number => {
-    element.classList.toggle('is-invalid', !isValid);
-    element.classList.toggle('is-valid', isValid);
-    return isValid ? 1 : 0;
+/** Toggles validation classes on an input element based on its validity.
+* @returns {number} - 1 if valid, 0 if invalid.
+*/
+const toggleValidationClasses = (isValid: boolean, element: HTMLInputElement): number => {
+    element.classList.toggle('is-invalid', !isValid); 
+    element.classList.toggle('is-valid', isValid); 
+    return isValid ? 1 : 0; 
 };
 
-const formValidator = (form: HTMLFormElement) => {
-                               
-    return(               
-     classValidToggle(form.hoppinessRating.value > 0 , form.hoppinessRating[0]) *
-     classValidToggle(form.maltinessRating.value > 0, form.maltinessRating[0]) *
-     classValidToggle(form.overallRating.value > 0, form.overallRating[0]) *
-     classValidToggle(form.termsCheckbox.checked , form.termsCheckbox) *
-     classValidToggle(validators.temperatue(form.temperatureUnit.value, form.temperature.value), form.temperature) *
-     classValidToggle(validators.countryName(form.country.value), form.country) *
-     classValidToggle(validators.cityName(form.city.value), form.city) *
-     classValidToggle(validators.beerName(form.beerType.value), form.beerType)
+/**
+ * @returns {number} - Product of the validation results of all form fields (1 if all valid, 0 if any invalid).
+ */
+const formValidator = (form: HTMLFormElement): number => {
+    return (
+        toggleValidationClasses(form.hoppinessRating.value, form.hoppinessRating[0]) *
+        toggleValidationClasses(form.overallRating.value, form.overallRating[0]) *
+        toggleValidationClasses(form.termsCheckbox.checked, form.termsCheckbox) *
+        toggleValidationClasses(validators.countryName(form.country.value), form.country) *
+        toggleValidationClasses(form.maltinessRating.value, form.maltinessRating[0]) *
+        toggleValidationClasses(validators.cityName(form.city.value), form.city) *
+        toggleValidationClasses(validators.beerName(form.beerType.value), form.beerType) *
+        toggleValidationClasses(
+            validators.temperature(form.temperatureUnit.value, parseFloat(form.temperature.value)),
+            form.temperature
+        )
     );
+};
 
-}
-export { validators, classValidToggle, formValidator };
+export { validators, toggleValidationClasses, formValidator };

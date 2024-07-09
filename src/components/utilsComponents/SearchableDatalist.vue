@@ -1,7 +1,7 @@
 <template>
   <div class="form-group position-relative">
     <!-- Label for the input -->
-    <label class="form-label" :for="id">{{ label }} <span class="text-danger">*</span></label>
+    <label class="form-label" :for="id">{{ label }}<span class="text-danger">*</span></label>
     <!-- Input field -->
     <input type="text"
            class="form-control"
@@ -13,21 +13,20 @@
            placeholder="Type to search..."
            @click="dataListDisplay('block')"
            @input="debouncedFilterOptions"
+           aria-expanded="false"
            required 
     >
     <!-- Datalist for options -->
-    <div :id="`${id}-dataList`" :class="[zIndex, 'datalist']" ref="dataListElement">
+    <div :id="`${id}-dataList`" :class="[zIndex, 'datalist border rounded-bottom border-light']" ref="dataListElement">
       <!-- Options in datalist -->
-      
       <div v-for="(opt, index) in optionsList"
               :key="index"
               :value="opt"
-              class="option"
+              class="option mb-2"
               @click="selectOption(opt)"
               v-show="opt.toUpperCase().includes(filteredText)">
               {{ opt  }} 
       </div>
-     
     </div>
     <!-- Validation feedback -->
     <div class="invalid-feedback">
@@ -38,7 +37,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount, PropType } from 'vue';
-import { classValidToggle, validators } from '@/utils/validateInput';
+import { toggleValidationClasses, validators } from '@/utils/validateInput';
 
 // Define props for the component
 const props = defineProps({
@@ -64,7 +63,6 @@ const filteredText = ref('');
 
 // Debounce timeout reference
 let debounceTimeout: number;
-
 // Display the datalist
 const dataListDisplay = (display: string) => {
   const list = dataListElement.value;
@@ -90,7 +88,7 @@ const filterOptions = () => {
 const selectOption = (option: string) => {
   const input = textInputField.value;
   if (input) {
-    classValidToggle(true, input); // it is a valid option because it is from the list
+    toggleValidationClasses(true, input); // it is a valid option because it is from the list
     input.value = option;  // Set input value to selected option
     dataListDisplay('none');
   }
@@ -101,7 +99,7 @@ const checkValidation = () => {
   const input = textInputField.value;
   if (input && props.validator) {
     const isValid = props.validator(input.value);
-    classValidToggle(isValid, input);
+    toggleValidationClasses(isValid, input);
   }
 };
 
@@ -128,13 +126,11 @@ onBeforeUnmount(() => {
 
   
 <style scoped>
+
 /* Scoped styles for datalist */
 .datalist {
   position: absolute;
   background-color: #f0f0f0;
-  border: 1px solid rgb(139, 139, 139);
-  border-radius: 0 0 5px 5px;
-  border-top: none;
   font-family: sans-serif;
   font-size: 14px;
   padding: 5px;

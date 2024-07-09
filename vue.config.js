@@ -13,5 +13,5 @@ module.exports = defineConfig({
   devServer: {
     proxy: "https://api.openweathermap.org/",
     historyApiFallback: true,
-  }
+  },
 })

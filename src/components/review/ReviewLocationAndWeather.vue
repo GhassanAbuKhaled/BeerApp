@@ -12,7 +12,7 @@
     />
   </div>
   <div class="col-sm-5">
-    <label for="city" class="form-label">City <span class="text-danger">*</span></label>
+    <label for="city" class="form-label">City<span class="text-danger">*</span></label>
     <input
       type="text"
       ref="cityInputField"
@@ -30,33 +30,36 @@
   <!-- Temperature Input -->
   <div class="form-group">
     <label for="temperatureInput">Temperature:</label>
-    <div class="form-check form-check-inline ms-2">
-      <input
-        type="radio"
-        id="fahrenheitRadio"
-        name="temperatureUnit"
-        class="form-check-input"
-        value="F"
-        @click="temperatureUnit = 'F'"
-      />
-      <label class="form-check-label" for="fahrenheitRadio">Fahrenheit</label>
-    </div>
-    <div class="form-check form-check-inline">
-      <input
-        type="radio"
-        id="celsiusRadio"
-        name="temperatureUnit"
-        class="form-check-input"
-        value="C"
-        @click="temperatureUnit = 'C'"
-        checked
-      />
-      <label class="form-check-label" for="celsiusRadio">Celsius</label>
+    <div class="temperature-unit d-inline-block ms-2">
+
+      <div class="form-check form-check-inline">
+        <input
+          type="radio"
+          id="fahrenheitRadio"
+          name="temperatureUnit"
+          class="form-check-input"
+          value="F"
+          @click="temperatureUnit = 'F'"
+        />
+        <label class="form-check-label" for="fahrenheitRadio">Fahrenheit</label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input
+          type="radio"
+          id="celsiusRadio"
+          name="temperatureUnit"
+          class="form-check-input"
+          value="C"
+          @click="temperatureUnit = 'C'"
+          checked
+        />
+        <label class="form-check-label" for="celsiusRadio">Celsius</label>
+      </div>
     </div>
   </div>
 
-  <div class="form-group">
-    <label for="temperature" class="form-label">Enter Temperature <span class="text-danger">*</span></label>
+  <div class="form-group col-12 col-sm-8">
+    <label for="temperature" class="form-label">Enter Temperature<span class="text-danger">*</span></label>
     <input
       type="number"
       class="form-control"
@@ -77,7 +80,7 @@ import { ref, onMounted, watch } from 'vue';
 import SearchableDatalist from '@/components/utilsComponents/SearchableDatalist.vue';
 import getLocation from '@/services/locationServices';
 import getCountriesList from '@/services/countriesServices';
-import {validators, classValidToggle } from '@/utils/validateInput';
+import {validators, toggleValidationClasses } from '@/utils/validateInput';
 
 let optionsList : string[] = [];
 // Reactive references for location details, options list, and component key
@@ -131,7 +134,7 @@ onMounted(async () => {
 const validateCity = (event: Event) =>{
   if(event){
     const input = event.target as HTMLInputElement;
-    classValidToggle(validators.cityName(input.value), input);
+    toggleValidationClasses(validators.cityName(input.value), input);
   }
 };
 
@@ -139,8 +142,8 @@ const validateCity = (event: Event) =>{
 const validateTemperature = () => {
  const input =  temperatureInputField.value;
   if (input) {
-   const isValid = validators.temperatue(temperatureUnit.value, parseFloat(input.value));
-   classValidToggle(isValid, input );
+   const isValid = validators.temperature(temperatureUnit.value, parseFloat(input.value));
+   toggleValidationClasses(isValid, input );
   }
 };
 
@@ -148,3 +151,16 @@ const validateTemperature = () => {
 watch(temperatureUnit, validateTemperature)
 
 </script>
+
+<style scoped>
+.temperature-unit{
+  width: 100%;
+  margin-top: 8px;
+}
+@media (min-width: 390px) {
+  .temperature-unit{
+    width: auto ;
+    margin-top: 0;
+  }
+}
+</style>

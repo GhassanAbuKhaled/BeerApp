@@ -1,7 +1,7 @@
 <template>
-  <main class="container border mt-1 p-4 mb-5 user-select-none">
-    <h4 class="text-start">Beer Review</h4>
-    <!-- Form container -->
+  <main class="container border border-dark-subtle p-4 mb-3 user-select-none">
+    <h4 class="text-start fw-bolder mb-3">Beer Review</h4>
+    <!-- Form  -->
     <form class="row g-4 needs-validation" id="reviewBeerForm" novalidate @submit.prevent="handleSubmit">
       <!-- Type of Beer -->
       <BeerType />
@@ -11,6 +11,8 @@
       <Rating itemName="Hoppiness" id="hoppinessRating" />
       <Rating itemName="Maltiness"  id="maltinessRating"/>
       <Rating itemName="Overall" id="overallRating"/>
+      <!-- Comment -->
+       <Comment id="reviewComment"  label="Leave a comment here" placeholder="comment"/>
       <!-- Terms and Conditions Checkbox -->
       <TermsAndConditions />
       <!-- Submit Button -->
@@ -25,20 +27,22 @@
 import Rating from "./ReviewRating.vue";
 import BeerType from "./ReviewBeerType.vue";
 import WeatherAndLocation from "./ReviewLocationAndWeather.vue";
+import Comment from "./ReviewComment.vue";
 import TermsAndConditions from "./ReviewTermsAndConditions.vue";
-import { classValidToggle, formValidator, validators } from "@/utils/validateInput";
+import { formValidator } from "@/utils/validateInput";
+import sanitizeInputs from "@/utils/sanitizedInput";
 
 const handleSubmit = (event: Event) => {
   event.preventDefault();
   const form = event.target as HTMLFormElement;
-  const formData: any = new FormData(form);
-  const reviewData = Object.fromEntries(formData.entries()) as ReviewData;
-
+  
   if(!formValidator(form)) return;
+  
+  const formData: FormData = new FormData(form);  
+  let reviewData = Object.fromEntries(formData.entries());
+  reviewData = sanitizeInputs(reviewData);
 
   console.log(reviewData);
-
-
 };
 
 
@@ -46,13 +50,7 @@ const handleSubmit = (event: Event) => {
 
 <style scoped>
 .container {
-  max-width: 500px;
+  width: min(600px, 95vw);
   margin: 0 auto;
-}
-
-h4 {
-  text-align: center;
-  margin-bottom: 1.5rem;
-  font-weight: 600;
 }
 </style>

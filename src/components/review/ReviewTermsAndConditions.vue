@@ -19,11 +19,11 @@
 
 
 <script setup lang="ts">
-import { classValidToggle } from '@/utils/validateInput';
+import { toggleValidationClasses } from '@/utils/validateInput';
 
 const handleClick =  (event: Event) => {
     const input = event.target as HTMLInputElement;
-    if(input) classValidToggle(input.checked, input)
+    if(input) toggleValidationClasses(input.checked, input)
 }
 
 </script>

@@ -38,7 +38,7 @@ describe("SearchableDatalist.vue", () => {
     await input.setValue('Option');
     await input.trigger('input');
 
-    let options = wrapper.findAll('option');
+    let options = wrapper.findAll('.option');
     expect(options.length).toBe(3); 
 
     jest.advanceTimersByTime(200); 
@@ -46,7 +46,7 @@ describe("SearchableDatalist.vue", () => {
     // Update wrapper after debounce
     await nextTick();
 
-    options = wrapper.findAll('option');
+    options = wrapper.findAll('.option');
     expect(options.length).toBe(3); // Both options should still be visible after debounce
 
     jest.useRealTimers(); // Restore real timers after test
@@ -80,7 +80,7 @@ describe("SearchableDatalist.vue", () => {
     const input = wrapper.find("input");
     await input.trigger("click");
 
-    const datalist = wrapper.find("datalist");
+    const datalist = wrapper.find(".datalist");
     expect(datalist.isVisible()).toBe(true);
   });
 
@@ -89,7 +89,7 @@ describe("SearchableDatalist.vue", () => {
     await input.trigger("click");
 
     document.body.click();
-    const datalist = wrapper.find("datalist");
+    const datalist = wrapper.find(".datalist");
     expect(datalist.isVisible()).toBe(false);
   });
 });

@@ -1,9 +1,10 @@
 <template>
-    <div class="col-xs-12 col-sm-9 d-flex justify-content-between">
+    <div class="rating-container col-12 col-sm-8  justify-content-between">
         <!-- Item name label -->
-        <h6 class="form-label">
-            {{ itemName }} <span class="text-danger">*</span>
-        </h6>
+        <label class="form-label">
+            {{ itemName }}<span class="text-danger">*</span>
+        </label>
+        
         <!-- Star rating control -->
         <div class="star-rating grid text-start" style="direction: rtl;">
             <!-- Star rating inputs -->
@@ -11,14 +12,14 @@
                 <input 
                     type="radio" 
                     class="d-none"
-                    :name="id" 
+                    :name="`${id}`" 
                     :value="starCount - i + 1"
                     :id="`${id}-${starCount - i + 1}`"
                     ref="ratingInputs"
                     @click="handleClick(starCount - i + 1)"
                     required
                 >
-                <label :for="`${id}-${starCount - i + 1}`" class="fs-4">☆</label>
+                <label :for="`${id}-${starCount - i + 1}`" class="fs-5">☆</label>
             </template>
             <div class="invalid-feedback text-start">Please select a rating</div>
         </div>
@@ -27,7 +28,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { classValidToggle, validators } from '@/utils/validateInput';
+import { toggleValidationClasses, validators } from '@/utils/validateInput';
 
 defineProps({
     itemName: { 
@@ -48,7 +49,7 @@ const ratingInputs = ref<HTMLInputElement[]>([]);
 
 const handleClick = (value: number) => {
     if (ratingInputs.value.length > 0) {
-        classValidToggle(value > 0, ratingInputs.value[0]);          
+        toggleValidationClasses(value > 0, ratingInputs.value[0]);          
     }
 };
 </script>
@@ -57,7 +58,6 @@ const handleClick = (value: number) => {
 <style scoped>
 .star-rating>label {
     position: relative;
-    width: 1em;
     color: #FFC107;
     cursor: pointer;
     line-height: 0;
@@ -86,5 +86,12 @@ const handleClick = (value: number) => {
 
 .star-rating:hover>input:checked~label:before {
     opacity: 0;
+}
+
+@media (min-width: 340px) {
+    .rating-container{
+        display: inline-flex;
+    }
+    
 }
 </style>

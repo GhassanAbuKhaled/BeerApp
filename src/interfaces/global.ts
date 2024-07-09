@@ -29,14 +29,3 @@ interface InputRecord {
   [key: string]: any;
 }
 
-interface ReviewData {
-  Hoppiness: number;
-  Maltiness: number;
-  Overall: number;
-  beerType: string;
-  city: string;
-  country: string;
-  temperature: number;
-  temperatureUnit: string;
-  termsCheckbox: string;
-}
