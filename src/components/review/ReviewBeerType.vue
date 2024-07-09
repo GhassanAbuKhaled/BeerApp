@@ -1,12 +1,12 @@
 <template>
     <div class="col-sm-12">
         <SearchableDatalist 
-          id="beerType" 
+          name="beerType" 
           label="Beer" 
           zIndex="z-3" 
           :optionsList="optionsList" 
           :key="componentKey" 
-          :validator="validators.beerName"
+          :validationFun="validators.beerName"
         />
     </div>
 </template>
@@ -14,8 +14,8 @@
 <script setup lang="ts">
 
 import SearchableDatalist from '@/components/utilsComponents/SearchableDatalist.vue';
-import getBeerTypes from '@/services/reviewServices';
 import { validators } from '@/utils/validateInput';
+import getBeerTypes from '@/services/reviewServices';
 import { onMounted, ref } from 'vue';
 
 let optionsList : string[] = [];

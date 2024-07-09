@@ -15,4 +15,4 @@ const sanitizeInputs = (data: InputRecord): InputRecord => {
   return sanitizedInputs;
 };
 
-export  default sanitizeInputs;
+export default sanitizeInputs;

@@ -1,14 +1,15 @@
 <template>
   <div class="form-group position-relative">
     <!-- Label for the input -->
-    <label class="form-label" :for="id">{{ label }}<span class="text-danger">*</span></label>
+    <label class="form-label" :for="name+label">{{ label }}<span class="text-danger">*</span></label>
     <!-- Input field -->
     <input type="text"
            class="form-control"
            autocomplete="off"
            role="combobox"
-           :id="`${id}-textInput`"
-           :name="id"
+           :id="name+label"
+           :name="name"
+           :data-review-info="name"
            ref="textInputField"
            placeholder="Type to search..."
            @click="dataListDisplay('block')"
@@ -17,12 +18,12 @@
            required 
     >
     <!-- Datalist for options -->
-    <div :id="`${id}-dataList`" :class="[zIndex, 'datalist border rounded-bottom border-light']" ref="dataListElement">
+    <div :id="`${name}-dataList`" :class="[zIndex, 'datalist border rounded-bottom border-light']" ref="dataListElement">
       <!-- Options in datalist -->
       <div v-for="(opt, index) in optionsList"
+              class="option p-1"
               :key="index"
               :value="opt"
-              class="option mb-2"
               @click="selectOption(opt)"
               v-show="opt.toUpperCase().includes(filteredText)">
               {{ opt  }} 
@@ -41,18 +42,16 @@ import { toggleValidationClasses, validators } from '@/utils/validateInput';
 
 // Define props for the component
 const props = defineProps({
-  id: {
+  name: {
       type: String, 
       required: true, 
-      validator(value: string, prpos) {
-        return validators.withSpacesRegex(value)
-      } 
+      validator: (value: string) => validators.withSpacesRegex(value)
   },
   label: { type: String, required: true },
   optionsList: { type: Array as () => string[], required: true },
   value: { type: String },
   zIndex: { type: String, required: true },
-  validator: Function as PropType<(input: string) => boolean>,
+  validationFun: Function as PropType<(input: string) => boolean>,
 });
 
 // Reactive references
@@ -90,15 +89,14 @@ const selectOption = (option: string) => {
   if (input) {
     toggleValidationClasses(true, input); // it is a valid option because it is from the list
     input.value = option;  // Set input value to selected option
-    dataListDisplay('none');
   }
 };
 
 // Validate input value
 const checkValidation = () => {
   const input = textInputField.value;
-  if (input && props.validator) {
-    const isValid = props.validator(input.value);
+  if (input && props.validationFun) {
+    const isValid = props.validationFun(input.value);
     toggleValidationClasses(isValid, input);
   }
 };
@@ -106,9 +104,8 @@ const checkValidation = () => {
 // Hide datalist and reset input style
 const hideDatalist = (event: MouseEvent) => {
   const element = event.target as HTMLElement;
-  const id = `${props.id}-textInput`;
-  const list = dataListElement.value;
-  if (list && (id !== element.id)) dataListDisplay('none');
+  const inputFiedId = props.name + props.label;
+  if (element.id != inputFiedId) dataListDisplay('none');
 };
 
 // Event listeners
@@ -123,10 +120,8 @@ onBeforeUnmount(() => {
   document.removeEventListener('click', hideDatalist);
 });
 </script>
-
-  
+ 
 <style scoped>
-
 /* Scoped styles for datalist */
 .datalist {
   position: absolute;
@@ -140,7 +135,9 @@ onBeforeUnmount(() => {
   width: 100%;
   display: none;
 }
-
+.datalist:hover{
+  cursor: pointer;
+}
 /* Hover effect for options */
 .option:hover,
 .active {

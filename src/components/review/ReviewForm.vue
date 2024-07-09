@@ -2,17 +2,17 @@
   <main class="container border border-dark-subtle p-4 mb-3 user-select-none">
     <h4 class="text-start fw-bolder mb-3">Beer Review</h4>
     <!-- Form  -->
-    <form class="row g-4 needs-validation" id="reviewBeerForm" novalidate @submit.prevent="handleSubmit">
+    <form method="POST" class="row g-4 needs-validation" id="reviewBeerForm" novalidate @submit.prevent="handleSubmit">
       <!-- Type of Beer -->
       <BeerType />
       <!-- Location and Weather Inputs -->
       <WeatherAndLocation />
       <!-- Ratings -->
-      <Rating itemName="Hoppiness" id="hoppinessRating" />
-      <Rating itemName="Maltiness"  id="maltinessRating"/>
-      <Rating itemName="Overall" id="overallRating"/>
+      <Rating label="Hoppiness" name="hoppinessRating" />
+      <Rating label="Maltiness"  name="maltinessRating"/>
+      <Rating label="Overall" name="overallRating"/>
       <!-- Comment -->
-       <Comment id="reviewComment"  label="Leave a comment here" placeholder="comment"/>
+       <Comment  label="Leave a comment here" name="reviewComment" placeholder="comment"/>
       <!-- Terms and Conditions Checkbox -->
       <TermsAndConditions />
       <!-- Submit Button -->
@@ -30,19 +30,16 @@ import WeatherAndLocation from "./ReviewLocationAndWeather.vue";
 import Comment from "./ReviewComment.vue";
 import TermsAndConditions from "./ReviewTermsAndConditions.vue";
 import { formValidator } from "@/utils/validateInput";
-import sanitizeInputs from "@/utils/sanitizedInput";
 
 const handleSubmit = (event: Event) => {
   event.preventDefault();
-  const form = event.target as HTMLFormElement;
-  
-  if(!formValidator(form)) return;
-  
-  const formData: FormData = new FormData(form);  
-  let reviewData = Object.fromEntries(formData.entries());
-  reviewData = sanitizeInputs(reviewData);
+  const form = event.target as HTMLFormElement;  
 
-  console.log(reviewData);
+  const {review, validationResult} = formValidator(form);
+
+  if(!validationResult) return;
+  console.log(review, validationResult);
+
 };
 
 

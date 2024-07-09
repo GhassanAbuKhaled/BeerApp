@@ -2,24 +2,25 @@
     <div class="rating-container col-12 col-sm-8  justify-content-between">
         <!-- Item name label -->
         <label class="form-label">
-            {{ itemName }}<span class="text-danger">*</span>
+            {{ label }}<span class="text-danger">*</span>
         </label>
         
         <!-- Star rating control -->
         <div class="star-rating grid text-start" style="direction: rtl;">
             <!-- Star rating inputs -->
-            <template v-for="i in starCount" :key="`${itemName}-${i}`">
+            <template v-for="i in starCount" :key="`${name}-${i}`">
                 <input 
                     type="radio" 
                     class="d-none"
-                    :name="`${id}`" 
+                    :name="`${name}`" 
                     :value="starCount - i + 1"
-                    :id="`${id}-${starCount - i + 1}`"
+                    :id="`${name}-${starCount - i + 1}`"
                     ref="ratingInputs"
+                    :data-review-info="( i==starCount) ? name : null" 
                     @click="handleClick(starCount - i + 1)"
                     required
                 >
-                <label :for="`${id}-${starCount - i + 1}`" class="fs-5">☆</label>
+                <label :for="`${name}-${starCount - i + 1}`" class="fs-5">☆</label>
             </template>
             <div class="invalid-feedback text-start">Please select a rating</div>
         </div>
@@ -31,16 +32,14 @@ import { ref } from 'vue';
 import { toggleValidationClasses, validators } from '@/utils/validateInput';
 
 defineProps({
-    itemName: { 
+    label: { 
         type: String, 
         required: true, 
     },
-    id:{
+    name:{
         type: String, 
         required: true, 
-        validator(value: string, prpos) {
-           return  validators.withSpacesRegex(value)
-        } 
+        validator: (value: string)  => validators.withSpacesRegex(value)
     },
     starCount: { type: Number, default: 9 },
 });

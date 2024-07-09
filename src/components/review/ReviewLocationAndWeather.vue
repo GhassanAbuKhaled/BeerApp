@@ -2,22 +2,22 @@
   <!-- Location Input Fields -->
   <div class="col-sm-7">
     <SearchableDatalist
-      id="country"
+      name="country"
       label="Country"
       zIndex="z-2"
       :value="locationDetails.country"
       :optionsList="optionsList"
       :key="componentKey"
-      :validator="validators.countryName"
+      :validationFun="validators.countryName"
     />
   </div>
   <div class="col-sm-5">
-    <label for="city" class="form-label">City<span class="text-danger">*</span></label>
+    <label for="cityName" class="form-label">City<span class="text-danger">*</span></label>
     <input
       type="text"
       ref="cityInputField"
       class="form-control"
-      id="city"
+      id="cityName"
       name="city"
       v-model="locationDetails.city"
       autocomplete="off"
@@ -34,10 +34,10 @@
 
       <div class="form-check form-check-inline">
         <input
-          type="radio"
-          id="fahrenheitRadio"
-          name="temperatureUnit"
           class="form-check-input"
+          id="fahrenheitRadio"
+          type="radio"
+          name="temperatureUnit"
           value="F"
           @click="temperatureUnit = 'F'"
         />
@@ -45,10 +45,10 @@
       </div>
       <div class="form-check form-check-inline">
         <input
-          type="radio"
-          id="celsiusRadio"
-          name="temperatureUnit"
           class="form-check-input"
+          id="celsiusRadio"
+          type="radio"
+          name="temperatureUnit"
           value="C"
           @click="temperatureUnit = 'C'"
           checked
@@ -59,11 +59,11 @@
   </div>
 
   <div class="form-group col-12 col-sm-8">
-    <label for="temperature" class="form-label">Enter Temperature<span class="text-danger">*</span></label>
+    <label for="temperatureValue" class="form-label">Enter Temperature<span class="text-danger">*</span></label>
     <input
       type="number"
       class="form-control"
-      id="temperature"
+      id="temperatureValue"
       name="temperature"
       ref="temperatureInputField"
       v-model="locationDetails.temperature"

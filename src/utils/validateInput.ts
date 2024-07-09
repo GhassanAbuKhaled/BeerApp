@@ -1,3 +1,5 @@
+import { sanitize } from "dompurify";
+
 // Type definition for validation rules
 type ValidationRule = {
     regex: RegExp; 
@@ -39,7 +41,7 @@ const validateLength = (input: string, minLength: number, maxLength: number): bo
 
 // Validates an input string against a given validation rule.
 const validateInput = (input: string, rule: ValidationRule): boolean => {
-    if (rule) {
+    if (rule) {   
         // Validate the input using the regex and length constraints
         return rule.regex.test(input) && validateLength(input, rule.minLength, rule.maxLength);
     }
@@ -58,6 +60,7 @@ const validateTemperature = (unit: string, value: number): boolean => {
     return value >= min && value <= max; 
 };
 
+
 // Object containing specific validation methods for different fields
 const validators = {
     cityName: (name: string): boolean => validateInput(name, validationConfig.city),
@@ -67,16 +70,16 @@ const validators = {
     withSpacesRegex: (value: string): boolean => {
         const isValidProp = /^[\w-]+$/.test(value);
         if (!isValidProp) {
-            throw new Error('Invalid itemName prop: should only contain alphanumeric characters and hyphens.');
+            throw new Error('Invalid item name prop: should only contain alphanumeric characters and hyphens.');
         }
         return isValidProp; // Return the validation result
-    }
+    },
 };
 
 /** Toggles validation classes on an input element based on its validity.
 * @returns {number} - 1 if valid, 0 if invalid.
 */
-const toggleValidationClasses = (isValid: boolean, element: HTMLInputElement): number => {
+const toggleValidationClasses = (isValid: boolean, element: HTMLElement): number => {
     element.classList.toggle('is-invalid', !isValid); 
     element.classList.toggle('is-valid', isValid); 
     return isValid ? 1 : 0; 
@@ -85,20 +88,51 @@ const toggleValidationClasses = (isValid: boolean, element: HTMLInputElement): n
 /**
  * @returns {number} - Product of the validation results of all form fields (1 if all valid, 0 if any invalid).
  */
-const formValidator = (form: HTMLFormElement): number => {
-    return (
-        toggleValidationClasses(form.hoppinessRating.value, form.hoppinessRating[0]) *
-        toggleValidationClasses(form.overallRating.value, form.overallRating[0]) *
-        toggleValidationClasses(form.termsCheckbox.checked, form.termsCheckbox) *
-        toggleValidationClasses(validators.countryName(form.country.value), form.country) *
-        toggleValidationClasses(form.maltinessRating.value, form.maltinessRating[0]) *
-        toggleValidationClasses(validators.cityName(form.city.value), form.city) *
-        toggleValidationClasses(validators.beerName(form.beerType.value), form.beerType) *
-        toggleValidationClasses(
-            validators.temperature(form.temperatureUnit.value, parseFloat(form.temperature.value)),
-            form.temperature
-        )
-    );
+
+
+const formValidator = (form: HTMLFormElement) => {
+    const {
+        hoppinessRating,
+        overallRating,
+        maltinessRating,
+        termsWasAccepted,
+        country,
+        city,
+        beerType,
+        temperatureUnit,
+        temperature,
+        reviewComment,
+    } = form;
+
+    const review: ReviewData = {
+        hoppinessRating: hoppinessRating.value,
+        overallRating: overallRating.value,
+        maltinessRating: maltinessRating.value,
+        termsWasAccepted: termsWasAccepted.checked,
+        countryName: sanitize(country.value),
+        cityName: sanitize(city.value),
+        beerType: sanitize(beerType.value),
+        comment: sanitize(reviewComment.value),
+        temperatureUnit: temperatureUnit.value,
+        temperature: parseFloat(temperature.value),
+    };
+
+    const validations = [
+        toggleValidationClasses(review.hoppinessRating > 0, hoppinessRating[0]),
+        toggleValidationClasses(review.overallRating > 0, overallRating[0]),
+        toggleValidationClasses(review.maltinessRating > 0, maltinessRating[0]),
+        toggleValidationClasses(review.termsWasAccepted, termsWasAccepted),
+        toggleValidationClasses(validators.countryName(review.countryName), country),
+        toggleValidationClasses(validators.cityName(review.cityName), city),
+        toggleValidationClasses(validators.beerName(review.beerType), beerType),
+        toggleValidationClasses(validators.temperature(review.temperatureUnit, review.temperature), temperature)
+    ];
+
+    const validationResult = validations.reduce((acc, curr) => acc * curr, 1);
+
+    return { validationResult, review };
 };
 
-export { validators, toggleValidationClasses, formValidator };
+
+
+export { validators, toggleValidationClasses, formValidator};

@@ -1,12 +1,13 @@
 <template>
     <div class="form-group">
-    <label :for="id" class="form-label">
+    <label :for="name+label" class="form-label">
         {{ label }}
     </label>
     <textarea
         class="form-control"
         :placeholder="placeholder"
-        :id="id"
+        :name="name"
+        :id="name+label"
         style="height: 100px;"
         @input="autoResize"
     ></textarea>
@@ -17,12 +18,12 @@
 import { validators } from '@/utils/validateInput';
 
 defineProps({
-    id: {
+    name: {
     type: String,
     required: true,
     validator(value: string) {
         return validators.withSpacesRegex(value);
-    },
+    }
     },
     label: { type: String, required: true },
     placeholder: { type: String, default: 'type..' },

@@ -13,7 +13,7 @@ module.exports = defineConfig({
   pwa: {
     workboxPluginMode: 'InjectManifest', // InjectManifest to inject custom service worker
     workboxOptions: {
-      swSrc: '@/service-worker', // Specify the source of custom service worker file
+      swSrc: '@/serviceWorker', // Specify the source of custom service worker file
     },
   },
   devServer: {
