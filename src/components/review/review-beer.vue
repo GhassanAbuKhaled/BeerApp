@@ -13,7 +13,7 @@
 
 <script setup lang="ts">
 
-import SearchableDatalist from '@/components/utilsComponents/SearchableDatalist.vue';
+import SearchableDatalist from '@/components/utilsComponents/searchable-datalist.vue';
 import { validators } from '@/utils/validateInput';
 import getBeerTypes from '@/services/reviewServices';
 import { onMounted, ref } from 'vue';

@@ -7,9 +7,9 @@ describe("ReviewRating.vue", () => {
   beforeEach(() => {
     wrapper = shallowMount(ReviewRating, {
       props: {
-        itemName: "Test Item",
+        label: "Test Item",
         starCount: 5,
-        id:"tRating"
+        name:"tRating"
       },
       attachTo: document.body,
     });
@@ -21,7 +21,7 @@ describe("ReviewRating.vue", () => {
 
   it("renders correctly with given props", () => {
     expect(wrapper.exists()).toBe(true);
-    expect(wrapper.find("h6.form-label").text()).toContain("Test Item");
+    expect(wrapper.find("label.form-label").text()).toContain("Test Item");
     expect(wrapper.findAll("input[type='radio']").length).toBe(5);
   });
 

@@ -24,11 +24,11 @@
 </template>
 
 <script setup lang="ts">
-import Rating from "./ReviewRating.vue";
-import BeerType from "./ReviewBeerType.vue";
-import WeatherAndLocation from "./ReviewLocationAndWeather.vue";
-import Comment from "./ReviewComment.vue";
-import TermsAndConditions from "./ReviewTermsAndConditions.vue";
+import Rating from "./review-rating.vue";
+import BeerType from "./review-beer.vue";
+import WeatherAndLocation from "./review-location.vue";
+import Comment from "./review-comment.vue";
+import TermsAndConditions from "./review-terms.vue";
 import { formValidator } from "@/utils/validateInput";
 
 const handleSubmit = (event: Event) => {

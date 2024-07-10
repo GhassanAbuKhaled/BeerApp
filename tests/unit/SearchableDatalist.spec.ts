@@ -4,16 +4,16 @@ import { ComponentPublicInstance, nextTick } from "vue";
 
 describe("SearchableDatalist.vue", () => {
   let wrapper: VueWrapper<ComponentPublicInstance>; // Define wrapper outside to access it across test cases
-  const validatorMock = jest.fn((input: string) => input === 'Option 1');
+  const validatorMock = jest.fn((input: string) => input === 'Option');
 
   beforeEach(() => {
     wrapper = mount(SearchableDatalist, {
       props: {
-        id: "testName",
+        name: "testName",
         label: "Test Label",
         optionsList: ["Option 1", "Option 2", "Option 3"],
         zIndex: "z-3",
-        validator: validatorMock
+        validationFun: validatorMock
       },
       attachTo: document.body,
     });
@@ -45,7 +45,7 @@ describe("SearchableDatalist.vue", () => {
 
     // Update wrapper after debounce
     await nextTick();
-
+   
     options = wrapper.findAll('.option');
     expect(options.length).toBe(3); // Both options should still be visible after debounce
 
@@ -65,13 +65,13 @@ describe("SearchableDatalist.vue", () => {
 
     // Simulate typing and trigger input event
     const input = wrapper.find('input');
-    await input.setValue('Option 1');
+    await input.setValue('Option');
     await input.trigger('input');
-
     jest.advanceTimersByTime(200); 
+
     await nextTick();
     // Assert validation result
-    expect(validatorMock).toHaveBeenCalledWith('Option 1');
+    expect(validatorMock).toHaveBeenCalledWith('Option');
     expect(input.classes()).toContain('is-valid'); // Assuming you have a class for valid inputs
     jest.useRealTimers();
   });

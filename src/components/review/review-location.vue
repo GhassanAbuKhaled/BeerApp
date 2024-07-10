@@ -77,7 +77,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue';
-import SearchableDatalist from '@/components/utilsComponents/SearchableDatalist.vue';
+import SearchableDatalist from '@/components/utilsComponents/searchable-datalist.vue';
 import getLocation from '@/services/locationServices';
 import getCountriesList from '@/services/countriesServices';
 import {validators, toggleValidationClasses } from '@/utils/validateInput';

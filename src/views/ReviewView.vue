@@ -3,5 +3,5 @@
 </template>
 
 <script setup lang="ts">
-import ReviewForm from "@/components/review/ReviewForm.vue"
+import ReviewForm from "@/components/review/review-form.vue"
 </script>
