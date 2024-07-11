@@ -93,9 +93,7 @@ registerRoute(
  * @param {FetchEvent} event - The fetch event.
  */
 self.addEventListener('fetch', (event: FetchEvent) => {
-  if (event.request.method === 'POST' && event.request.url.endsWith('/reviews/save')) {
-    console.log('worker');
-    
+  if (event.request.method === 'POST' && event.request.url.endsWith('/reviews/save')) {    
     event.respondWith(
       fetch(event.request).catch(() => {
         return new Response(JSON.stringify({ message: 'Form data saved for later submission.' }), {
@@ -105,3 +103,35 @@ self.addEventListener('fetch', (event: FetchEvent) => {
     );
   }
 });
+
+
+const locationSyncQueue = new Queue('locationSyncQueue', {
+  onSync: async ({ queue }) => {
+    console.log('Background Sync: Sync Event Triggered');
+    let entry;
+    while ((entry = await queue.shiftRequest())) {
+      try {
+        console.log('Background Sync: Replaying request:', entry.request);
+        const response = await fetch(entry.request);
+        console.log('Background Sync: Request succeeded:', response);
+      } catch (error) {
+        console.error('Background Sync: Error syncing location data:', error);
+        await queue.unshiftRequest(entry); // Re-add request to the queue
+        throw error; // Let the sync fail to retry later
+      }
+    }
+  },
+});
+
+// Register route for background sync of location API
+registerRoute(
+  ({ url }) => url.origin === 'https://api.openweathermap.org' && url.pathname.startsWith('/data/2.5'),
+  new NetworkOnly({
+    plugins: [
+      new BackgroundSyncPlugin('locationSyncQueue', {
+        maxRetentionTime: 24 * 60, // Retry for up to 24 hours
+      }),
+    ],
+  }),
+  'GET'
+);
