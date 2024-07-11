@@ -78,7 +78,7 @@ const formSyncQueue = new Queue('formSyncQueue', {
 
 // Register route for background sync
 registerRoute(
-  '/api/submit', // Adjust this URL pattern based on your API endpoint
+  '/reviews/save', // Adjust this URL pattern based on your API endpoint
   new NetworkOnly({
     plugins: [new BackgroundSyncPlugin('formSyncQueue', {
       maxRetentionTime: 24 * 60 // Retry for up to 24 hours
