@@ -29,6 +29,6 @@ mockBeerAppApi.onGet(BEER_ENDPOINTS.GET_BEER_TYPES).reply<BeersResponse>(200, {
 
 
 mockBeerAppApi.onPost(REVIEW_ENDPOINTS.SAVE_REVIEW)
-              .reply(200,{message: "review was successfully saved"});
+              .reply(400,{message: "review was successfully saved"});
 
 export default mockBeerAppApi;

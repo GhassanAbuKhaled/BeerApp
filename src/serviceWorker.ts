@@ -93,13 +93,15 @@ registerRoute(
  * @param {FetchEvent} event - The fetch event.
  */
 self.addEventListener('fetch', (event: FetchEvent) => {
-  event.respondWith(
-    caches.match(event.request)
-      .then((response: Response | undefined) => {
-        if (response) {
-          return response;
-        }
-        return fetch(event.request);
+  if (event.request.method === 'POST' && event.request.url.endsWith('/reviews/save')) {
+    console.log('worker');
+    
+    event.respondWith(
+      fetch(event.request).catch(() => {
+        return new Response(JSON.stringify({ message: 'Form data saved for later submission.' }), {
+          headers: { 'Content-Type': 'application/json' }
+        });
       })
-  );
+    );
+  }
 });
