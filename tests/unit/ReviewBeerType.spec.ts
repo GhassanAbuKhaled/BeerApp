@@ -1,7 +1,7 @@
-import { mount, shallowMount, VueWrapper } from "@vue/test-utils";
+import { shallowMount, VueWrapper } from "@vue/test-utils";
 import ReviewBeerType from "@/components/review/ReviewBeerType.vue";
 import { nextTick } from "vue";
-import getBeerTypes from "@/services/reviewServices";
+import {getBeerTypes} from "@/services/reviewServices";
 
 // Mock getBeerTypes function
 jest.mock('@/services/reviewServices', () => ({

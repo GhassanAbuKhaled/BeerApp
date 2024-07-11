@@ -18,15 +18,15 @@
 import { validators } from '@/utils/validateInput';
 
 defineProps({
-    name: {
+  name: {
     type: String,
     required: true,
     validator(value: string) {
-        return validators.withSpacesRegex(value);
+      return validators.withSpacesRegex(value);
     }
     },
-    label: { type: String, required: true },
-    placeholder: { type: String, default: 'type..' },
+  label: { type: String, required: true },
+  placeholder: { type: String, default: 'type..' },
 });
 
 const maxTextAreaHeight = 250;

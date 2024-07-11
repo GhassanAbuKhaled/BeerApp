@@ -15,7 +15,7 @@
 
 import SearchableDatalist from '@/components/utilsComponents/searchable-datalist.vue';
 import { validators } from '@/utils/validateInput';
-import getBeerTypes from '@/services/reviewServices';
+import { getBeerTypes } from '@/services/reviewServices';
 import { onMounted, ref } from 'vue';
 
 let optionsList : string[] = [];

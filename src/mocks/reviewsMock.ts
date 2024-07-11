@@ -1,7 +1,7 @@
 import { mockBeerAppApi }  from "@/api/beerAppApi";
-import { BEER_ENDPOINTS } from "@/api/endpoints";
+import { BEER_ENDPOINTS, REVIEW_ENDPOINTS } from "@/api/endpoints";
 
-// arguments for reply are (status, data, headers)
+
 mockBeerAppApi.onGet(BEER_ENDPOINTS.GET_BEER_TYPES).reply<BeersResponse>(200, {
   beers: [
     { id: '1', name: "Augustiner Helles" },
@@ -26,5 +26,9 @@ mockBeerAppApi.onGet(BEER_ENDPOINTS.GET_BEER_TYPES).reply<BeersResponse>(200, {
     { id: '20', name: "Gaffel Kölsch" },
   ],
 });
+
+
+mockBeerAppApi.onPost(REVIEW_ENDPOINTS.SAVE_REVIEW)
+              .reply(200,{message: "review was successfully saved"});
 
 export default mockBeerAppApi;

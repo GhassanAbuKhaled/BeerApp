@@ -3,55 +3,60 @@ import { LOCATIONS_ENDPOINTS } from "@/api/endpoints";
 
 let latitude: number | null = null;
 let longitude: number | null = null;
+
 /**
  * Retrieves the location details based on the current latitude and longitude.
- * @returns {Promise<WeatherAndLocationData | null>} - The country, city and temperature of the current location or null if there's an error.
+ * @returns {Promise<WeatherAndLocationData>} - The country, city, and temperature of the current location.
  */
-const getLocation = async (): Promise<WeatherAndLocationData | null> => {
+const getLocation = async (): Promise<WeatherAndLocationData> => {
   try {
     await getLatitudeAndLongitude();
 
-    if (latitude !== null && longitude !== null) {
-      const response = await locationApi.get(
-        LOCATIONS_ENDPOINTS.GET_LOCATION_AND_WEATHER(latitude, longitude)
-      );
-      
-      const data: WeatherAndLocationData = {
-        country: response.data.sys.country,
-        city: response.data.name,
-        temperature: Math.ceil(response.data.main.temp),
-      };
+    if (latitude && longitude) {
+      try {
+        const response = await locationApi.get(
+          LOCATIONS_ENDPOINTS.GET_LOCATION_AND_WEATHER(latitude, longitude)
+        );
 
-      return data;
+        const data: WeatherAndLocationData = {
+          country: response.data.sys.country,
+          city: response.data.name,
+          temperature: Math.ceil(response.data.main.temp),
+        };
+
+        return data;
+      } catch (error) {
+        throw new Error("Failed to fetch location and weather data.");
+      }
     } else {
       throw new Error("Failed to retrieve coordinates.");
     }
-  } catch (err) {
-    console.error("Error fetching location:", err);
-    return null
+  } catch (error) {
+    throw new Error("Failed to fetch location coordinates.");
   }
 };
 
-// Retrieves the current latitude and longitude using the Geolocation API.
+
+/**
+ * Retrieves the current latitude and longitude using the Geolocation API.
+ * @returns {Promise<void>}
+ */
 const getLatitudeAndLongitude = (): Promise<void> => {
   return new Promise((resolve, reject) => {
-    try {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          ({ coords: { latitude: lat, longitude: lon } }) => {
-            latitude = lat;
-            longitude = lon;
-            resolve();
-          },
-          (err) => reject(new Error(err.message || "An unknown error occurred."))
-        );
-      } else {
-        reject(new Error("Geolocation is not supported by this browser."));
-      }
-    } catch (error) {
-      reject(new Error("An error occurred while trying to get the location."));
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        ({ coords: { latitude: lat, longitude: lon } }) => {
+          latitude = lat;
+          longitude = lon;
+          resolve();
+        },
+        (err) => reject(new Error(err.message || "An unknown error occurred."))
+      );
+    } else {
+      reject(new Error("Geolocation is not supported by this browser."));
     }
   });
 };
+
 
 export default getLocation;

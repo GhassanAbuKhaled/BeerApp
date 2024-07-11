@@ -1,4 +1,5 @@
-import axios from "axios";
+import useTokenStore from "@/store/tokenStore";
+import axios, { AxiosError } from "axios";
 import MockAdapter from "axios-mock-adapter";
 
 const baseURL = "http://api.example.com/v1";
@@ -6,12 +7,9 @@ const baseURL = "http://api.example.com/v1";
 // Axios instance with customized configuration
 const beerAppApi = axios.create({
   baseURL,
-  timeout: 5000, // Request timeout in milliseconds
+  timeout: 5000, 
   headers: {
     'Content-Type': 'application/json',
-    // Add other headers if needed, such as authorization headers
-    // Example:
-    // 'Authorization': `Bearer ${yourAccessToken}`,
   },
   withCredentials: true,
 });
@@ -19,26 +17,28 @@ const beerAppApi = axios.create({
 // Request interceptor for handling request errors
 beerAppApi.interceptors.request.use(
   (config) => {
-    // Modify request config here if needed (e.g., adding headers dynamically)
+
+      const csrfToken = useTokenStore().csrfTokenValue;
+      if(csrfToken) config.headers['csrf_token'] = csrfToken;
+
     return config;
   },
-  (error) => {
-    // Handle request error
-    console.error('Request error:', error.message);
+  (error: AxiosError) => {
     return Promise.reject(error);
   }
 );
 
-// Response interceptor for handling response errors
+// Response interceptor
 beerAppApi.interceptors.response.use(
   (response) => {
-    // Handle successful responses here if needed
+    // Handle successful response
     return response;
   },
-  (error) => {
-    // Handle response error
-    console.error('Response error:', error.message);
-    return Promise.reject(error);
+  (error: AxiosError) => {
+    if (axios.isCancel(error)) {
+      console.error('Request canceled', error.message);
+    }
+    return Promise.reject(error); 
   }
 );
 

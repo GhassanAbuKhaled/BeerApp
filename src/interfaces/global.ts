@@ -41,4 +41,11 @@ interface ReviewData {
   comment: string;
   temperatureUnit: 'C' | 'F';
   temperature: number;
+  _csrfToken: string;
+}
+
+interface ToastOptions {
+  message: string;
+  duration?: number;
+  type?: string;
 }

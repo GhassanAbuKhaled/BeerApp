@@ -80,17 +80,22 @@ const validators = {
 * @returns {number} - 1 if valid, 0 if invalid.
 */
 const toggleValidationClasses = (isValid: boolean, element: HTMLElement): number => {
-    element.classList.toggle('is-invalid', !isValid); 
-    element.classList.toggle('is-valid', isValid); 
-    return isValid ? 1 : 0; 
+    try {
+        element.classList.toggle('is-invalid', !isValid); 
+        element.classList.toggle('is-valid', isValid); 
+        return isValid ? 1 : 0; 
+    } catch (error) {
+        console.error(element, error);
+        return NaN;
+    }
 };
 
 /**
- * @returns {number} - Product of the validation results of all form fields (1 if all valid, 0 if any invalid).
+ * @returns {object} - An object containing:
+ *   - validationResult {number}: Product of the validation results of all form fields (1 if all valid, 0 if any invalid).
+ *   - review {ReviewData}: Sanitized review data from the form.
  */
-
-
-const formValidator = (form: HTMLFormElement) => {
+const formValidator = (form: HTMLFormElement): { validationResult: number, review: ReviewData } => {
     const {
         hoppinessRating,
         overallRating,
@@ -102,6 +107,7 @@ const formValidator = (form: HTMLFormElement) => {
         temperatureUnit,
         temperature,
         reviewComment,
+        _csrfToken,
     } = form;
 
     const review: ReviewData = {
@@ -115,6 +121,7 @@ const formValidator = (form: HTMLFormElement) => {
         comment: sanitize(reviewComment.value),
         temperatureUnit: temperatureUnit.value,
         temperature: parseFloat(temperature.value),
+        _csrfToken: _csrfToken.value 
     };
 
     const validations = [

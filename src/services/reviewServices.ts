@@ -1,6 +1,5 @@
-import { BEER_ENDPOINTS } from "@/api/endpoints";
+import { BEER_ENDPOINTS, REVIEW_ENDPOINTS } from "@/api/endpoints";
 import beerAppApi from "@/api/beerAppApi";
-import { AxiosResponse } from "axios";
 import mockBeerAppApi from "@/mocks/reviewsMock";
 
 // Activate the mock adapter for reviews
@@ -8,18 +7,29 @@ mockBeerAppApi.adapter();
 
 /**
  * Retrieves the list of available beer types.
- * @returns {Promise<BeersResponse | null>} A promise resolving to an array of beer types or null if there's an error.
+ * @returns {Promise<BeersResponse>} A promise resolving to an array of beer types.
  */
-export const getBeerTypes = async (): Promise<BeersResponse | null> => {
+export const getBeerTypes = async (): Promise<BeersResponse> => {
   try {
-    const response: AxiosResponse<BeersResponse> = await beerAppApi.get(
+    const response = await beerAppApi.get(
       BEER_ENDPOINTS.GET_BEER_TYPES
     );
     return response.data;
   } catch (error) {
-    console.error("Failed to fetch beer types", error);
-    return null;
+    throw error;
   }
 };
 
-export default getBeerTypes;
+/**
+ * Saves a review.
+ * @param {ReviewData} review The review data to be saved.
+ * @returns {Promise<{message: string} | null>} A promise resolving to a confirmation message.
+ */
+export const saveReview = async (review: ReviewData): Promise<{message: string} > => {
+  try {
+    const response = await beerAppApi.post(REVIEW_ENDPOINTS.SAVE_REVIEW, review);
+    return response.data // Assuming backend sends a string confirmation message
+  } catch (error) {
+    throw error;
+  }
+};

@@ -81,6 +81,8 @@ import SearchableDatalist from '@/components/utilsComponents/searchable-datalist
 import getLocation from '@/services/locationServices';
 import getCountriesList from '@/services/countriesServices';
 import {validators, toggleValidationClasses } from '@/utils/validateInput';
+import handleApiError from '@/utils/errorHandler';
+import { AxiosError } from 'axios';
 
 let optionsList : string[] = [];
 // Reactive references for location details, options list, and component key
@@ -92,8 +94,8 @@ const temperatureInputField = ref<HTMLInputElement>();
 // Fetches initial location details from the server
 const fetchLocationDetails = async () => {
   try {
-      const details = await getLocation();
-      if (details) locationDetails.value = details;
+      const data = await getLocation();
+      if (data) locationDetails.value = data;
   } catch (error) {
     console.error('Error fetching location details:', error);
   }
