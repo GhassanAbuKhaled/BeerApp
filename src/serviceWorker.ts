@@ -1,7 +1,6 @@
 /// <reference lib="webworker" />
 import { precacheAndRoute, PrecacheEntry } from 'workbox-precaching';
-import { getAllFormEntries, deleteFormEntry } from '@/utils/indexedDB';  // Update the path accordingly
-
+import { getAllFormEntries, deleteFormEntry } from '@/utils/indexedDB';  // Adjust the path as necessary
 
 declare const self: ServiceWorkerGlobalScope;
 
@@ -23,7 +22,7 @@ const urlsToCache = [
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
-    .then(cache => cache.addAll(urlsToCache))
+      .then(cache => cache.addAll(urlsToCache))
   );
 });
 
@@ -42,7 +41,7 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-
+// Sync event for form data submission
 self.addEventListener('sync', (event: SyncEvent) => {
   if (event.tag === 'syncFormData') {
     event.waitUntil(
@@ -50,7 +49,8 @@ self.addEventListener('sync', (event: SyncEvent) => {
         .then(async (formDataArray) => {
           await Promise.all(formDataArray.map(async ({ key, data }) => {
             console.log('Current Object Key:', key); // Log the key
-            // This is a dummy server endpoint (http://localhost:5000/reviews/save) used for testing purposes.
+
+            // Dummy server endpoint for testing purposes
             try {
               const response = await fetch('http://localhost:5000/reviews/save', {
                 method: 'POST',

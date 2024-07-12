@@ -13,8 +13,10 @@ const openDatabase = async () => {
     },
   });
 };
-
-// Save form data to IndexedDB
+/**
+ * Saves form data to IndexedDB.
+ * @param formData ReviewData The data to be saved.
+ */
 export const saveFormData = async (formData: ReviewData): Promise<void> => {
   const db = await openDatabase();
   const transaction = db.transaction(storeName, 'readwrite');
@@ -23,7 +25,10 @@ export const saveFormData = async (formData: ReviewData): Promise<void> => {
   await transaction.done;
 };
 
-// Get all saved form entries from IndexedDB
+/**
+ * Retrieves all saved form entries from IndexedDB.
+ * @returns Promise<{ key: IDBValidKey, data: ReviewData }[]> Promise resolving to an array of form entries.
+ */
 export const getAllFormEntries = async (): Promise<{ key: IDBValidKey, data: ReviewData }[]> => {
   const db = await openDatabase();
   const transaction = db.transaction(storeName, 'readonly');
@@ -36,23 +41,17 @@ export const getAllFormEntries = async (): Promise<{ key: IDBValidKey, data: Rev
     formDataArray.push({ key: cursor.primaryKey, data: cursor.value });
     cursor = await cursor.continue();
   }
-
   return formDataArray;
 };
 
-// Delete a specific form entry from IndexedDB
+/**
+ * Deletes a specific form entry from IndexedDB.
+ * @param key IDBValidKey The key of the entry to delete.
+ */
 export const deleteFormEntry = async (key: IDBValidKey): Promise<void> => {
   const db = await openDatabase();
   const transaction = db.transaction(storeName, 'readwrite');
   const store = transaction.objectStore(storeName);
   await store.delete(key);
-  await transaction.done;
-};
-// Clear all form entries from IndexedDB
-export const clearAllFormEntries = async (): Promise<void> => {
-  const db = await openDatabase();
-  const transaction = db.transaction(storeName, 'readwrite');
-  const store = transaction.objectStore(storeName);
-  await store.clear();
   await transaction.done;
 };
