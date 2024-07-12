@@ -2,7 +2,7 @@ import useTokenStore from "@/store/tokenStore";
 import axios, { AxiosError } from "axios";
 import MockAdapter from "axios-mock-adapter";
 
-const baseURL = "http://localhost:5000/";
+const baseURL = "https://reqres.in/api/users";
 
 // Axios instance with customized configuration
 const beerAppApi = axios.create({

@@ -8,8 +8,5 @@ if ('serviceWorker' in navigator && 'SyncManager' in window) {
     } catch (error) {
       console.error('Error handling offline mode:', error);
     }
-  } else {
-    // Fallback for browsers that do not support service workers or SyncManager
-    console.log('Your browser does not support offline mode.');
   }
 }

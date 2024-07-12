@@ -52,7 +52,7 @@ self.addEventListener('sync', (event: SyncEvent) => {
 
             // Dummy server endpoint for testing purposes
             try {
-              const response = await fetch('http://localhost:5000/reviews/save', {
+              const response = await fetch('https://reqres.in/api/users', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data),

@@ -1,24 +1,30 @@
 <template>
   <nav>
     <router-link to="/">Home</router-link> |
-    <router-link to="/review">Review</router-link> 
+    <router-link to="/review">Review</router-link>
   </nav>
   <router-view/>
   <toast />
 </template>
+
 <script setup lang="ts">
 import { provideToast } from '@/utils/toast';
 import toast from '@/components/utilsComponents/toast.vue';
 import { backgroundSync } from './utils/backgroundSync';
 import { onMounted } from 'vue';
 
+// Initialize toast notifications
 provideToast();
 
-onMounted(async ()=>{
-  await backgroundSync();
+// Execute background synchronization on component mount
+onMounted(() => {
+  setTimeout(async () => {
+    await backgroundSync();
+  }, 2000);
 });
 
 </script>
+
 
 <style>
 #app {
