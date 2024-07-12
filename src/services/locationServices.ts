@@ -19,7 +19,7 @@ const getLocation = async (): Promise<WeatherAndLocationData> => {
         );
 
         const data: WeatherAndLocationData = {
-          country: response.data.sys.country,
+          countryCode: response.data.sys.country,
           city: response.data.name,
           temperature: Math.ceil(response.data.main.temp),
         };

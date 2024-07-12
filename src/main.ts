@@ -6,6 +6,7 @@ import '@/registerServiceWorker'
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 
+  
 const pinia = createPinia();
 const app = createApp(App);
 

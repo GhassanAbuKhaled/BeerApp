@@ -1,5 +1,5 @@
 import { shallowMount, VueWrapper } from "@vue/test-utils";
-import ReviewRating from "@/components/review/ReviewRating.vue";
+import ReviewRating from "@/components/review/review-rating.vue";
 
 describe("ReviewRating.vue", () => {
   let wrapper: VueWrapper<any>;

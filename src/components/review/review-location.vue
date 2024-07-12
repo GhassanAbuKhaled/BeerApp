@@ -5,8 +5,8 @@
       name="country"
       label="Country"
       zIndex="z-2"
-      :value="locationDetails.country"
-      :optionsList="optionsList"
+      :value="countriesList[locationDetails.countryCode]"
+      :optionsList="Object.values(countriesList)"
       :key="componentKey"
       :validationFun="validators.countryName"
     />
@@ -79,14 +79,10 @@
 import { ref, onMounted, watch } from 'vue';
 import SearchableDatalist from '@/components/utilsComponents/searchable-datalist.vue';
 import getLocation from '@/services/locationServices';
-import getCountriesList from '@/services/countriesServices';
-import {validators, toggleValidationClasses } from '@/utils/validateInput';
-import handleApiError from '@/utils/errorHandler';
-import { AxiosError } from 'axios';
+import {validators, toggleValidationClasses , countriesList} from '@/utils/validateInput';
 
-let optionsList : string[] = [];
 // Reactive references for location details, options list, and component key
-const locationDetails = ref<WeatherAndLocationData>({ country: '', city: '', temperature: null });
+const locationDetails = ref<WeatherAndLocationData>({ countryCode: '', city: '', temperature: null });
 const componentKey = ref(0);
 const temperatureUnit = ref<'C' | 'F'>('C');
 const temperatureInputField = ref<HTMLInputElement>();
@@ -95,41 +91,19 @@ const temperatureInputField = ref<HTMLInputElement>();
 const fetchLocationDetails = async () => {
   try {
       const data = await getLocation();
-      if (data) locationDetails.value = data;
+      if (data) {
+        locationDetails.value = data;
+          // Force re-render of the datalist component by incrementing componentKey
+        componentKey.value += 1;
+      }
   } catch (error) {
     console.error('Error fetching location details:', error);
-  }
-};
-
-// Fetches the list of countries from the server
-const fetchCountries = async () => {
-  try {
-    const data = await getCountriesList();
-
-    if (data && data.countries) {
-      const countries = data.countries;
-
-      // Update optionsList with country names and flags
-      optionsList = Object.values(countries).map(country => `${country.name} ${country.flag}`);
-      
-      // selecte cuurrent country in locationDetails.
-      const currentCountry = countries[locationDetails.value.country];
-      if (currentCountry) {
-        locationDetails.value.country = `${currentCountry.name} ${currentCountry.flag}`;
-      }
-      // Force re-render of the datalist component by incrementing componentKey
-      componentKey.value += 1;
-    }
-  } catch (error) {
-    // Log error if fetching countries fails
-    console.error('Error fetching countries list:', error);
   }
 };
 
 // Validate city and temperature inputs on mount
 onMounted(async () => {
   await fetchLocationDetails();
-  await fetchCountries();
 });
 
 // Validates the city input field

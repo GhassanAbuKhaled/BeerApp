@@ -1,5 +1,5 @@
 import { mount, VueWrapper } from "@vue/test-utils";
-import SearchableDatalist from "@/components/utilsComponents/SearchableDatalist.vue";
+import SearchableDatalist from "@/components/utilsComponents/searchable-datalist.vue";
 import { ComponentPublicInstance, nextTick } from "vue";
 
 describe("SearchableDatalist.vue", () => {

@@ -4,7 +4,6 @@ import mockBeerAppApi from "@/mocks/reviewsMock";
 
 // Activate the mock adapter for reviews
 mockBeerAppApi.adapter();
-
 /**
  * Retrieves the list of available beer types.
  * @returns {Promise<BeersResponse>} A promise resolving to an array of beer types.

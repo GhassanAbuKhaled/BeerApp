@@ -15,6 +15,3 @@ export const BEER_ENDPOINTS = {
   GET_BEER_TYPES: "/beer/types",
 };
 
-export const COUNTRIES_ENDPOINTS = {
-  GET_COUNTRIES_LIST: "/countries",
-};

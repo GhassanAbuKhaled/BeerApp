@@ -31,8 +31,6 @@ const fetchCsrfToken = async () =>  {
   }
 }  
 // Fetch CSRF token on component mount
-onMounted(async () => {
-  await fetchCsrfToken();
-});
+onMounted(fetchCsrfToken);
 </script>
   

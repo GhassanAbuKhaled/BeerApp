@@ -1,137 +1,78 @@
-
 /// <reference lib="webworker" />
 import { precacheAndRoute, PrecacheEntry } from 'workbox-precaching';
-import { BackgroundSyncPlugin } from 'workbox-background-sync';
-import { registerRoute } from 'workbox-routing';
-import { NetworkOnly } from 'workbox-strategies';
-import { Queue } from 'workbox-background-sync/Queue';
+import { getAllFormEntries, deleteFormEntry } from '@/utils/indexedDB';  // Update the path accordingly
+
 
 declare const self: ServiceWorkerGlobalScope;
+
 /**
  * Precaches resources specified in the service worker manifest using Workbox.
  * @param {PrecacheEntry[]} self.__WB_MANIFEST - Array of resources to precache.
  */
 precacheAndRoute(self.__WB_MANIFEST as unknown as PrecacheEntry[]);
 
-const CACHE_NAME = 'BeerApp';
-// URLs to be precached when the service worker installs.
-const urlsToCache: string[] = [
+const CACHE_NAME = 'BeerApp-v1.0.1.0';
+const urlsToCache = [
   '/',
   '/index.html',
   '/css/app.css',
   '/js/app.js'
 ];
 
-/**
- * Event listener for the install event.
- * Caches specified URLs when the service worker is installed.
- * @param {ExtendableEvent} event - The install event.
- */
-self.addEventListener('install', (event: ExtendableEvent) => {
+// Service worker installation event
+self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then((cache: Cache) => {
-        return cache.addAll(urlsToCache);
-      })
+    .then(cache => cache.addAll(urlsToCache))
   );
 });
 
-/**
- * Event listener for the activate event.
- * Cleans up outdated caches when the service worker is activated.
- * @param {ExtendableEvent} event - The activate event.
- */
-self.addEventListener('activate', (event: ExtendableEvent) => {
-  const cacheWhitelist = [CACHE_NAME];
+// Service worker activation event
+self.addEventListener('activate', (event) => {
+  const version = 'v1.0.1.0';
   event.waitUntil(
-    caches.keys().then((cacheNames: string[]) => {
+    caches.keys().then(cacheNames => {
       return Promise.all(
-        cacheNames.map((cacheName: string) => {
-          if (cacheWhitelist.indexOf(cacheName) === -1) {
-            return caches.delete(cacheName);
-          }
-        })
+        cacheNames.map(c => c.split('-'))
+          .filter(c => c[0] === 'cache')
+          .filter(c => c[1] !== version)
+          .map(c => caches.delete(c.join('-')))
       );
     })
   );
 });
 
-/***
- * Background sync queue for handling form submissions.
- * Uses Workbox Queue to manage and retry failed POST requests.
- */
-const formSyncQueue = new Queue('formSyncQueue', {
-  onSync: async ({ queue }) => {
-    let entry;
-    while (entry = await queue.shiftRequest()) {
-      try {
-        const response = await fetch(entry.request);
-        // Handle successful response (optional)
-      } catch (error) {
-        console.error('Error syncing form data:', error);
-        await queue.unshiftRequest(entry); // Re-add request to the queue
-        throw new Error('Retry later');
-      }
-    }
-  },
-});
 
-// Register route for background sync
-registerRoute(
-  '/reviews/save', // Adjust this URL pattern based on your API endpoint
-  new NetworkOnly({
-    plugins: [new BackgroundSyncPlugin('formSyncQueue', {
-      maxRetentionTime: 24 * 60 // Retry for up to 24 hours
-    })]
-  }),
-  'POST'
-);
-
-/**
- * Event listener for the fetch event.
- * Responds with cached resources or fetches from the network as necessary.
- * @param {FetchEvent} event - The fetch event.
- */
-self.addEventListener('fetch', (event: FetchEvent) => {
-  if (event.request.method === 'POST' && event.request.url.endsWith('/reviews/save')) {    
-    event.respondWith(
-      fetch(event.request).catch(() => {
-        return new Response(JSON.stringify({ message: 'Form data saved for later submission.' }), {
-          headers: { 'Content-Type': 'application/json' }
-        });
-      })
+self.addEventListener('sync', (event: SyncEvent) => {
+  if (event.tag === 'syncFormData') {
+    event.waitUntil(
+      getAllFormEntries()
+        .then(async (formDataArray) => {
+          await Promise.all(formDataArray.map(async ({ key, data }) => {
+            console.log('Current Object Key:', key); // Log the key
+            // This is a dummy server endpoint (http://localhost:5000/reviews/save) used for testing purposes.
+            try {
+              const response = await fetch('http://localhost:5000/reviews/save', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data),
+              });
+              if (response.ok) {
+                // If submission was successful, delete the form entry from IndexedDB
+                await deleteFormEntry(key);
+                console.log('Form entry deleted from IndexedDB:', key);
+              } else {
+                throw new Error('Failed to submit form data');
+              }
+            } catch (error) {
+              console.error('Error submitting form data:', error);
+            }
+          }));
+          return Promise.resolve(true);
+        })
+        .catch((error) => {
+          console.error('Error retrieving or clearing form data:', error);
+        })
     );
   }
 });
-
-
-const locationSyncQueue = new Queue('locationSyncQueue', {
-  onSync: async ({ queue }) => {
-    console.log('Background Sync: Sync Event Triggered');
-    let entry;
-    while ((entry = await queue.shiftRequest())) {
-      try {
-        console.log('Background Sync: Replaying request:', entry.request);
-        const response = await fetch(entry.request);
-        console.log('Background Sync: Request succeeded:', response);
-      } catch (error) {
-        console.error('Background Sync: Error syncing location data:', error);
-        await queue.unshiftRequest(entry); // Re-add request to the queue
-        throw error; // Let the sync fail to retry later
-      }
-    }
-  },
-});
-
-// Register route for background sync of location API
-registerRoute(
-  ({ url }) => url.origin === 'https://api.openweathermap.org' && url.pathname.startsWith('/data/2.5'),
-  new NetworkOnly({
-    plugins: [
-      new BackgroundSyncPlugin('locationSyncQueue', {
-        maxRetentionTime: 24 * 60, // Retry for up to 24 hours
-      }),
-    ],
-  }),
-  'GET'
-);

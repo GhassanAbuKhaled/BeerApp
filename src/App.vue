@@ -9,7 +9,15 @@
 <script setup lang="ts">
 import { provideToast } from '@/utils/toast';
 import toast from '@/components/utilsComponents/toast.vue';
+import { backgroundSync } from './utils/backgroundSync';
+import { onMounted } from 'vue';
+
 provideToast();
+
+onMounted(async ()=>{
+  await backgroundSync();
+});
+
 </script>
 
 <style>

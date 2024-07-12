@@ -17,7 +17,20 @@ module.exports = defineConfig({
     },
   },
   devServer: {
-    proxy: "https://api.openweathermap.org/",
+    proxy: {
+      // Proxy API requests to OpenWeatherMap
+      '/weather': {
+        target: 'https://api.openweathermap.org',
+        changeOrigin: true,
+        pathRewrite: { '^/weather': '' },
+      },
+      // Proxy API requests to local backend
+      '/api': {
+        target: 'http://localhost:5000',
+        changeOrigin: true,
+        pathRewrite: { '^/api': '' },
+      },
+    },
     historyApiFallback: true,
   },
 })

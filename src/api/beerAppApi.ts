@@ -2,7 +2,7 @@ import useTokenStore from "@/store/tokenStore";
 import axios, { AxiosError } from "axios";
 import MockAdapter from "axios-mock-adapter";
 
-const baseURL = "http://api.example.com/v1";
+const baseURL = "http://localhost:5000/";
 
 // Axios instance with customized configuration
 const beerAppApi = axios.create({
@@ -11,7 +11,6 @@ const beerAppApi = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  withCredentials: true,
 });
 
 // Request interceptor for handling request errors
