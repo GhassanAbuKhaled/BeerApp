@@ -277,7 +277,6 @@ const toggleValidationClasses = (isValid: boolean, element: HTMLElement): number
         element.classList.toggle('is-valid', isValid); 
         return isValid ? 1 : 0; 
     } catch (error) {
-        console.error(element, error);
         return NaN;
     }
 };
