@@ -22,18 +22,20 @@ interface InputRecord {
 }
 
 interface ReviewData {
-  hoppinessRating: number;      // Hoppiness rating
-  overallRating: number;        // Overall rating
-  maltinessRating: number;      // Maltiness rating
-  termsWasAccepted: boolean;    // Whether terms were accepted
-  countryName: string;          // Country name
-  cityName: string;             // City name
-  beerType: string;             // Beer type
-  comment: string;              // Review comment
-  temperatureUnit: 'C' | 'F';   // Temperature unit
-  temperature: number;          // Temperature value
-  _csrfToken: string;           // CSRF token
+  hoppinessRating: number;       // Hoppiness rating
+  overallRating: number;         // Overall rating
+  maltinessRating: number;       // Maltiness rating
+  termsWereAccepted: boolean;    // Whether terms were accepted
+  countryName: string;           // Country name
+  cityName: string;              // City name
+  beerType: string;              // Beer type
+  comment: string;               // Review comment
+  temperatureUnit: 'C' | 'F';    // Temperature unit
+  temperature: number;           // Temperature value
+  _csrfToken: string;            // CSRF token
+  timestamp: string;             // Timestamp
 }
+
 
 interface ToastOptions {
   message: string;         // Toast message

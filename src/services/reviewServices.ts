@@ -1,9 +1,9 @@
 import { BEER_ENDPOINTS, REVIEW_ENDPOINTS } from "@/api/endpoints";
 import beerAppApi from "@/api/beerAppApi";
-import mockBeerAppApi from "@/mocks/reviewsMock";
+// import mockBeerAppApi from "@/mocks/reviewsMock";
 
 // Activate the mock adapter for reviews
-mockBeerAppApi.adapter();
+// mockBeerAppApi.adapter();
 /**
  * Retrieves the list of available beer types.
  * @returns {Promise<BeersResponse>} A promise resolving to an array of beer types.

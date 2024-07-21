@@ -305,21 +305,22 @@ const formValidator = (form: HTMLFormElement): { validationResult: number, revie
         hoppinessRating: hoppinessRating.value,
         overallRating: overallRating.value,
         maltinessRating: maltinessRating.value,
-        termsWasAccepted: termsWasAccepted.checked,
+        termsWereAccepted: termsWasAccepted.checked,
         countryName: sanitize(country.value),
         cityName: sanitize(city.value),
         beerType: sanitize(beerType.value),
         comment: sanitize(reviewComment.value),
         temperatureUnit: temperatureUnit.value,
         temperature: parseFloat(temperature.value),
-        _csrfToken: _csrfToken.value 
+        _csrfToken: _csrfToken.value,
+        timestamp: new Date().toISOString()
     };
 
     const validations = [
         toggleValidationClasses(review.hoppinessRating > 0, hoppinessRating[0]),
         toggleValidationClasses(review.overallRating > 0, overallRating[0]),
         toggleValidationClasses(review.maltinessRating > 0, maltinessRating[0]),
-        toggleValidationClasses(review.termsWasAccepted, termsWasAccepted),
+        toggleValidationClasses(review.termsWereAccepted, termsWasAccepted),
         toggleValidationClasses(validators.countryName(review.countryName), country),
         toggleValidationClasses(validators.cityName(review.cityName), city),
         toggleValidationClasses(validators.beerName(review.beerType), beerType),

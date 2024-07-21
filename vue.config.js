@@ -26,7 +26,7 @@ module.exports = defineConfig({
       },
       // Proxy API requests to local backend
       '/api': {
-        target: 'https://reqres.in/api/users',
+        target: 'http://localhost:5000',
         changeOrigin: true,
         pathRewrite: { '^/api': '' },
       },

@@ -16,22 +16,26 @@
 import SearchableDatalist from '@/components/utilsComponents/searchable-datalist.vue';
 import { validators } from '@/utils/validateInput';
 import { getBeerTypes } from '@/services/reviewServices';
+import { saveBeerTypesToIndexedDB } from '@/utils/indexedDB';
 import { onMounted, ref } from 'vue';
 
 let optionsList : string[] = [];
-const componentKey  = ref(0)
+const componentKey  = ref(0);
 
 const fetchBeersTypes = async () => {
     try {
-        // Fetching beer types using a service function
+        // Fetching beer types using a service function.
         const data = await getBeerTypes();
-        // Updating optionsList if data is successfully fetched
-        if (data) {
+        // Updating optionsList if data is successfully fetched.
+        if (data) {            
+            await saveBeerTypesToIndexedDB(data);         
             // Mapping fetched beer names to optionsList
             optionsList = data.beers.map(beer => beer.name); 
-           // Ensure the component re-renders by updating the key.
+            // Ensure the component re-renders by updating the key.
             componentKey.value = componentKey.value + 1
         }
+
+       
     } catch (error) {
         console.error(error);
     }
